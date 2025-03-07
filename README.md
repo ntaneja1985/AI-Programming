@@ -546,3 +546,577 @@ navigateMaze(maze1, START_ROW, START_COLUMN, FLOOR_REWARD_VALUE, WALL_REWARD_VAL
 ```
 ### Result is as follows: 
 - ![alt text](image-53.png)
+
+## Neural Networks
+- It is basically as a digital brain
+- It consists of neurons which receive an input and produces an output. 
+- This neuron applies a mathematical function called an activation function on the inputs to produce the output 
+- ![alt text](image-54.png)
+- ![alt text](image-55.png)
+- Neurons are organized into layers 
+- ![alt text](image-56.png)
+- Imagine we want to build a system that recognizes handwritten digits 
+- We feed a neural network images of handwritten digits along with their corresponding labels 
+- The neural network learns to extract features from the image like edge, curves and patterns 
+- In the output later, the network assigns probability to each digit. 
+- For instance, if the network predicts a high probability for digit five, it means it's confident that the input image represents the digit five.
+- ![alt text](image-57.png)
+
+### Neural Network Architecture  
+- ![alt text](image-58.png)
+- Main components of neural network architecture are:
+- Neurons 
+- Layers 
+- Weighted Connections 
+- ![alt text](image-59.png)
+- Neurons are organized into layers 
+- Each layer connects to the next. 
+- The number of neurons in each layer can vary 
+- Weights determine strength of influence on the neuron 
+- ![alt text](image-60.png)
+#### Feed-Forward Neural Network 
+- ![alt text](image-61.png)
+- Used for tasks like classification and regression. 
+- Lets say we have an image of an fruit, this neural network can help recognize it based on the input features.
+- To train this network, we need labelled data.
+- Once trained, this neural network can now take in new input data like the color and size of a fruit, and predict whether it's an apple or an orange.
+
+#### Convolutional Neural Network 
+- ![alt text](image-62.png)
+- Convolutional neural networks, or CNNs, are specialized for processing grid like data such as images.
+- They consist of convolutional layers that extract features from input images, followed by pooling layers for downsampling and fully connected layers for classification.
+- Imagine you want to build a system that can recognize whether a picture contains a cat or a dog.
+A CNN can help you achieve this.
+- In a CNN, the first layer is typically a convolutional layer. This layer consists of tiny filters, also called kernels or feature detectors. Each filter slides across the input image pixel by pixel, and performs a mathematical operation called convolution.
+- As the filters slide over the image, they detect patterns such as edges, textures, and shapes.
+- These patterns are the building blocks of objects in the image.
+- For example, one filter might detect horizontal edges while another detects vertical edges.
+- After convolution, the result passes through an activation function such as ReLU, which stands for
+rectified linear unit. This function introduces non-linearity to the network, allowing it to learn complex relationships between features.
+- Next, the output from the convolutional layer is typically passed through a pooling layer.
+- Pooling helps reduce the spatial dimensions of the input, making the network more computationally efficient and less sensitive to small changes in the input after several convolutional and pooling layers.
+- The extracted features are flattened into a vector and passed to one or more fully connected layers.
+- These layers perform high level reasoning and decision making based on the learned features.
+- Finally, the output layer of the CNN contains neurons corresponding to the possible classes like cat
+or dog.
+- To train a CNN, we need a dataset of labelled images like images of dogs,cats etc. 
+- Once trained, if fed an image, the neural network can predict whether it is a cat or dog. 
+
+#### Recurrent Neural Network 
+- ![alt text](image-63.png)
+- Recurrent neural networks, or RNNs, are designed to handle sequential data where the order of inputs
+matters.
+- They have connections that loop back on themselves, allowing them to capture temporal dependencies
+in the data.
+- RNNs are widely used in tasks like speech recognition, language modeling, and time series prediction.
+- Imagine you want to build a system that generates text, one character at a time, based on a given
+input. An RNN can help you achieve this by remembering the context of the previous characters as it generates the next one.
+- At its core, RNN consists of a chain of repeating neural network modules or cells.
+- Each cell takes in two inputs the current input, like the character and the hidden state from the previous cell.
+- The hidden state acts as the memory of the network, capturing information about past inputs.
+- As the input sequence is fed into the RNN one element at a time, the hidden state is updated at each
+step based on the current input and the previous hidden state.
+- This process allows the network to maintain context and capture dependencies between sequential elements.
+- One variant is LSTM(Long short term memory) network.
+- Suppose we want to generate a sentence based on a given starting word.
+- We input the starting word into the RNN and let it generate the next word.
+- Then we input the generated word back into the RNN along with the previous hidden state, and repeat
+this process until we reach the desired length of the sentence.
+- During training, the RNN learns to predict the next element in the sequence based on the previous elements.
+- This is achieved by adjusting the parameters like weights and biases of the network using backpropagation through time or bptt, a variant of the backpropagation algorithm that takes into account the sequential nature of the data.
+- ![alt text](image-64.png)
+- LSTM is much better for speech recognition, time-series prediction
+- It builds a context of the input text.
+
+### Creating a Neural Network 
+- ![alt text](image-65.png)
+- We must understand the sigmoid function 
+- ![alt text](image-66.png)
+- Think of a sigmoid function that takes in any input value and gives us a value between 0 and 1. 
+- It can convert any value big or small and give us a value between 0 and 1 which is easy to work with. 
+- ![alt text](image-67.png)
+- derivative of any function tells us how much the function is changing at any given point of time. 
+- For the sigmoid function, its derivative tells you the rate at which the output is changing concerning
+the input.
+- When you take the derivative of the sigmoid function, you get another function that also depends on
+the input value x.
+- This derivative function helps us adjust the weights in our neural network during the training process.
+- The derivative function is helpful because it tells us how quickly the output of the sigmoid function
+is changing concerning the input x.
+- We can use this information to adjust the parameters of our neural network during the training process, which helps our network learn and improve over time.
+
+### Coding the Train Function
+- The Train method in the NeuralNetwork class is responsible for training the neural network using a process called backpropagation. Let's break down the steps in the method:
+1.	Iteration Loop: The method starts with a loop that iterates numberOfIterations times. This allows the neural network to update its weights multiple times to improve its performance.
+2.	Forward Pass: Inside the loop, the Think method is called to perform a forward pass through the neural network. The Think method takes the trainingInputs as input and returns the output of the neural network.
+3.	Error Calculation: The next step is to calculate the error between the expected output (trainingOutputs) and the actual output of the neural network. This is done by calling the PerformOperation method with the OPERATION.SUBTRACT operation. The PerformOperation method subtracts the trainingOutputs from the output obtained from the forward pass.
+4.	Adjustment Calculation: The adjustment to the weights is calculated using the backpropagation algorithm. The backpropagation algorithm calculates the gradient of the error with respect to the weights and adjusts the weights accordingly. The adjustment is calculated by performing a series of matrix operations:
+•	The Activate method is called with the output and true as arguments to calculate the derivative of the sigmoid activation function. The derivative is used to scale the error based on the slope of the activation function.
+•	The PerformOperation method is called with the OPERATION.MULTIPLY operation to multiply the error by the derivative of the sigmoid function.
+•	The DotProduct method is called with the transposed trainingInputs and the result of the previous operation to calculate the dot product between the transposed inputs and the error multiplied by the derivative.
+•	Finally, the PerformOperation method is called with the OPERATION.ADD operation to add the adjustment to the current weights.
+5.	Update Weights: The updated weights are assigned back to the weights variable of the neural network.
+By repeating this process for the specified number of iterations, the neural network gradually adjusts its weights to minimize the error and improve its performance in producing accurate outputs for the given inputs.
+
+```c#
+public void Train(double[,] trainingInputs, double[,] trainingOutputs, int numberOfIterations)
+{
+    for (int iteration = 0; iteration < numberOfIterations; iteration++)
+    {
+        double[,] output = Think(trainingInputs);
+        double[,] error = PerformOperation(trainingOutputs, output, OPERATION.SUBTRACT);
+        double[,] adjustment = DotProduct(Transpose(trainingInputs), PerformOperation(error,Activate(output, true), OPERATION.MULTIPLY));
+        weights = PerformOperation(weights, adjustment, OPERATION.ADD);
+    }
+}
+
+ //The PerformOperation method takes two matrices and an operation as input and performs the specified operation on each element of the matrices.
+ //n a neural network, element-wise operations are commonly used during the training process to update the weights based on the calculated error. The PerformOperation method allows for flexible and efficient computation of element-wise operations, such as addition, subtraction, and multiplication.
+ //By using a nested loop, the method iterates over each element of the matrices and performs the specified operation based on the OPERATION parameter. The result is stored in a new matrix, which is then returned.
+ //For example, during the training process, the PerformOperation method is used to subtract the predicted output from the desired output to calculate the error. It is also used to multiply the error with the derivative of the sigmoid function to adjust the weights. These element-wise operations are essential for updating the weights and improving the performance of the neural network.
+ private double[,] PerformOperation(double[,] matrix1, double[,] matrix2, OPERATION operation)
+ {
+     int numberOfRows = matrix1.GetLength(0);
+     int numberOfCols = matrix1.GetLength(1);
+     double[,] result = new double[numberOfRows, numberOfCols];
+     for (int row = 0; row < numberOfRows; row++)
+     {
+         for (int col = 0; col < numberOfCols; col++)
+         {
+             switch (operation)
+             {
+                 case OPERATION.ADD:
+                     result[row, col] = matrix1[row, col] + matrix2[row, col];
+                     break;
+                 case OPERATION.SUBTRACT:
+                     result[row, col] = matrix1[row, col] - matrix2[row, col];
+                     break;
+                 case OPERATION.MULTIPLY:
+                     result[row, col] = matrix1[row, col] * matrix2[row, col];
+                     break;
+             }
+         }
+     }
+     return result;
+ }
+
+
+```
+
+### DotProduct Function
+- The DotProduct function calculates the dot product of two matrices. The dot product is a mathematical operation that takes two matrices and produces a new matrix by multiplying corresponding elements and summing the results.
+Here's an example to illustrate how the DotProduct function works:
+- Suppose we have two matrices:
+matrix1 = [[1, 2],
+           [3, 4]]
+
+matrix2 = [[5, 6],
+           [7, 8]]
+
+- The dot product of matrix1 and matrix2 can be calculated as follows:
+- result = [[1*5 + 2*7, 1*6 + 2*8],
+          [3*5 + 4*7, 3*6 + 4*8]]
+- Simplifying the calculation, we get:
+- result = [[19, 22],
+          [43, 50]]
+- So, the resulting matrix result will have the same number of rows as matrix1 and the same number of columns as matrix2. Each element in the resulting matrix is obtained by multiplying the corresponding elements from matrix1 and matrix2 and summing them.
+- In the provided code, the DotProduct function takes two matrices, matrix1 and matrix2, as input. 
+- It iterates over the rows of matrix1 and the columns of matrix2, calculating the dot product for each element in the resulting matrix. The resulting matrix is then returned as the output of the function.
+```c#
+private double[,] DotProduct(double[,] matrix1, double[,] matrix2)
+{
+    int numberOfRowsInMatrix1 = matrix1.GetLength(0);
+    int numberOfColsInMatrix1 = matrix1.GetLength(1);
+
+    int numberOfRowsInMatrix2 = matrix2.GetLength(0);
+    int numberOfColsInMatrix2 = matrix2.GetLength(1);
+
+    double[,] result = new double[numberOfRowsInMatrix1, numberOfColsInMatrix2];
+    for(int rowInMatrix1 = 0; rowInMatrix1 < numberOfRowsInMatrix1; rowInMatrix1++)
+    {
+        for (int colInMatrix2 = 0; colInMatrix2 < numberOfColsInMatrix2; colInMatrix2++)
+        {
+            double sum = 0;
+            for (int colInMatrix1 = 0; colInMatrix1 < numberOfColsInMatrix1; colInMatrix1++)
+            {
+                sum += matrix1[rowInMatrix1, colInMatrix1] * matrix2[colInMatrix1, colInMatrix2];
+            }
+            result[rowInMatrix1, colInMatrix2] = sum;
+        }
+    }
+
+    return result;
+
+}
+```
+
+
+### Think method in Neural Method class
+- The Think method in the NeuralNetwork class is responsible for performing a feedforward operation in the neural network. It takes a 2D array of inputs as a parameter and returns a 2D array of the resulting outputs.
+- We call the Think method on the neuralNetwork object, passing in the inputs array. The Think method performs a feedforward operation by first calculating the dot product of the inputs and the weights of the neural network. The dot product is calculated using the DotProduct method.
+The resulting dot product is then passed to the Activate method, which applies the sigmoid activation function to each element in the dot product matrix. The sigmoid function transforms the values to a range between 0 and 1, representing the output of the neural network.
+Finally, the Think method returns the resulting outputs as a 2D array, which we can then use for further processing or analysis.
+```c#
+ public double[,] Think(double[,] inputs)
+{
+    return Activate(DotProduct(inputs, weights), false);
+}
+
+```
+
+### Transpose Function in Neural Network
+- Transposing a 2D array is like flipping it over its diagonal 
+- Rows become columns and columns become rows
+- ![alt text](image-68.png)
+```c#
+  public static double[,] Transpose(this double[] array, int rows, int columns)
+ {
+     double[,] result = new double[columns, rows];
+     for (int row = 0; row < rows;row++)
+     {
+         for (int col = 0; col < columns; col++)
+         {
+             result[col, row] = array[row * columns + col];
+         }
+     }
+     return result;
+ }
+```
+
+### Testing the code 
+- The method **Train** in the NeuralNetwork class is responsible for training the neural network using the provided training data. Let's break down the steps performed in this method:
+1.	The method takes three parameters: trainingInputs, trainingOutputs, and numberOfIterations.
+•	trainingInputs is a 2D array that represents the input data for the neural network. Each row in the array represents a set of input values.
+•	trainingOutputs is a 2D array that represents the expected output data for the corresponding input data. Each row in the array represents the expected output for the corresponding input row.
+•	numberOfIterations specifies the number of iterations or epochs for which the training process will be performed.
+2.	The method starts a loop that iterates numberOfIterations times. This loop represents the training process.
+3.	Inside the loop, the **Think** method is called to obtain the output of the neural network for the current set of trainingInputs. The Think method performs a feedforward operation, applying the activation function to the dot product of the trainingInputs and the current weights of the neural network.
+4.	The **difference** between the **obtained** output and the **expected** output, called the **error**, is calculated by performing the subtraction operation between trainingOutputs and the obtained output.
+5.	The **Activate** method is called to apply the **derivative** of the sigmoid activation function to the obtained output. This is done by passing the obtained output and true as the isDerivative parameter. The Activate method returns the derivative of the sigmoid function if isDerivative is true, otherwise it returns the sigmoid output.
+6.	The Transpose method is called to transpose the trainingInputs matrix. Transposing a matrix means converting its rows into columns and its columns into rows. This is useful for performing matrix multiplication.
+7.	The DotProduct method is called to perform the dot product between the transposed trainingInputs and the result of the element-wise multiplication of error and the derivative of the obtained output. The dot product is a mathematical operation that calculates the sum of the products of corresponding elements in two matrices.
+8.	The resulting dot product, called **adjustment**, represents the **adjustment** to be made to the current weights of the neural network.
+9.	The **PerformOperation** method is called to *add the adjustment* to the current weights. The PerformOperation method performs element-wise addition between the two matrices.
+10.	The updated weights are assigned to the weights variable of the neural network.
+11.	The loop continues until the specified number of iterations is reached.
+In summary, the Train method trains the neural network by iteratively adjusting the weights based on the error between the expected output and the obtained output. This process helps the neural network learn and improve its ability to make accurate predictions.
+
+```c#
+ //This is a simple implementation of a neural network in C# that can perform the OR operation.
+NeuralNetwork neuralNetwork = new NeuralNetwork();
+
+//Specify the inputs for training the neural network
+double[,] trainingInputs = new double[,]
+{
+    {0, 0, 0},
+    {1, 1, 1},
+    {1, 0, 0}
+};
+
+//Remember this will test the OR operation in the neural network
+//The OR operation is a logical operation that takes two binary inputs and returns true (1) if at least one of the inputs is true (1), and false (0) otherwise.
+double[,] trainingOutputs = new double[,]
+{
+    {0},
+    {1},
+    {1}
+};
+
+//Train the neural network with the training data
+neuralNetwork.Train(trainingInputs, trainingOutputs, 1000);
+
+//Test the neural network with new data
+double[,] output = neuralNetwork.Think(new double[,] {
+    { 0, 1, 0 },
+    { 0, 0, 0 },
+    { 0, 0, 1 }
+
+});
+
+//Print the output of the neural network
+PrintMatrix(output);
+
+//Method to print a 2D array
+static void PrintMatrix(double[,] matrix)
+{
+    int rows = matrix.GetLength(0);
+    int cols = matrix.GetLength(1);
+    for(int row = 0; row < rows; row++)
+    {
+        for(int column = 0; column < cols; column++)
+        {
+            Console.Write(Math.Round(matrix[row,column]) + " ");
+        }
+
+        Console.WriteLine();
+    }
+}
+
+```
+
+## Final Code:
+```c#
+ 
+//This is a simple implementation of a neural network in C# that can perform the OR operation.
+NeuralNetwork neuralNetwork = new NeuralNetwork();
+
+//Specify the inputs for training the neural network
+double[,] trainingInputs = new double[,]
+{
+    {0, 0, 0},
+    {1, 1, 1},
+    {1, 0, 0}
+};
+
+//Remember this will test the OR operation in the neural network
+//The OR operation is a logical operation that takes two binary inputs and returns true (1) if at least one of the inputs is true (1), and false (0) otherwise.
+double[,] trainingOutputs = new double[,]
+{
+    {0},
+    {1},
+    {1}
+};
+
+//Train the neural network with the training data
+neuralNetwork.Train(trainingInputs, trainingOutputs, 1000);
+
+//Test the neural network with new data
+double[,] output = neuralNetwork.Think(new double[,] {
+    { 0, 1, 0 },
+    { 0, 0, 0 },
+    { 0, 0, 1 }
+
+});
+
+//Print the output of the neural network
+PrintMatrix(output);
+
+//Method to print a 2D array
+static void PrintMatrix(double[,] matrix)
+{
+    int rows = matrix.GetLength(0);
+    int cols = matrix.GetLength(1);
+    for(int row = 0; row < rows; row++)
+    {
+        for(int column = 0; column < cols; column++)
+        {
+            Console.Write(Math.Round(matrix[row,column]) + " ");
+        }
+
+        Console.WriteLine();
+    }
+}
+
+//This class represents a simple implementation of a neural network in C# that can perform the OR operation.
+//The neural network is trained using a set of input-output pairs and then used to make predictions on new data.
+public class NeuralNetwork
+{
+    //2D array to store the weights of the neural network
+    //In a neural network, the weights represent the strength of the connections between the nodes.
+    //Each weight corresponds to a connection between two nodes.
+    //A 2D array is used to store the weights in a neural network because it allows for a flexible and efficient representation of the connections.
+    //The first dimension of the array represents the input nodes, and the second dimension represents the output nodes.
+    //Each element in the array represents the weight of the connection between a specific input node and a specific output node.
+    // By using a 2D array, we can easily access and manipulate the weights for each connection in the neural network.
+    // For example, if we want to update the weight between the first input node and the second output node, we can simply access weights[0, 1] and modify its value.
+    // Overall, using a 2D array for weights provides a structured and organized way to represent the connections in a neural network, making it easier to perform computations and update the weights during the training process.
+
+    private double[,] weights;
+
+    //Enum to represent the operations that the neural network can perform
+    enum OPERATION { ADD, SUBTRACT, MULTIPLY };
+
+    //Constructor to initialize the weights of the neural network
+    public NeuralNetwork()
+    {
+        Random randomNumber = new Random();
+        //Number of input nodes and output nodes
+        int numberOfInputNodes = 3;
+        int numberOfOutputNodes = 1;
+        weights = new double[numberOfInputNodes, numberOfOutputNodes];
+        //Initialize the weights with random values between -1 and 1
+        for (int i = 0; i < numberOfInputNodes; i++)
+        {
+            for (int j = 0; j < numberOfOutputNodes; j++)
+            {
+                weights[i, j] = 2* randomNumber.NextDouble() - 1;
+            }
+        }
+    }
+
+    //Method to transpose a 2D array
+    private double[,] Transpose(double[,] matrix)
+    {
+        return matrix.Cast<double>().ToArray().Transpose(matrix.GetLength(0), matrix.GetLength(1));
+    }
+
+
+    //Method to perform a feedforward operation in the neural network
+    // the Activate method applies the sigmoid activation function to each element in the input matrix and returns the resulting matrix.
+    // It also has the option to calculate the derivative of the sigmoid function if specified.
+    // This method is an essential step in the feedforward process of a neural network, where the input values are transformed through activation functions to produce the network's output.
+    private double[,] Activate(double[,] matrix, bool isDerivative)
+    {
+        int numberOfRows = matrix.GetLength(0);
+        int numberOfCols = matrix.GetLength(1);
+        double[,] result = new double[numberOfRows, numberOfCols];
+        for (int row = 0; row < numberOfRows; row++)
+        {
+            for (int col = 0; col < numberOfCols; col++)
+            {
+                double sigmoidOutput = result[row,col] = 1/(1+ Math.Exp(-matrix[row,col]));
+                double derivativeSigmoidOutput = result[row,col] = matrix[row,col] * (1 - matrix[row,col]);
+                result[row,col] = isDerivative ? derivativeSigmoidOutput : sigmoidOutput;
+            }
+        }
+
+        return result;
+    }
+
+    
+    public void Train(double[,] trainingInputs, double[,] trainingOutputs, int numberOfIterations)
+    {
+        for (int iteration = 0; iteration < numberOfIterations; iteration++)
+        {
+            double[,] output = Think(trainingInputs);
+            double[,] error = PerformOperation(trainingOutputs, output, OPERATION.SUBTRACT);
+            double[,] adjustment = DotProduct(Transpose(trainingInputs), PerformOperation(error,Activate(output, true), OPERATION.MULTIPLY));
+            weights = PerformOperation(weights, adjustment, OPERATION.ADD);
+        }
+    }
+
+
+    // 
+    private double[,] DotProduct(double[,] matrix1, double[,] matrix2)
+    {
+        int numberOfRowsInMatrix1 = matrix1.GetLength(0);
+        int numberOfColsInMatrix1 = matrix1.GetLength(1);
+
+        int numberOfRowsInMatrix2 = matrix2.GetLength(0);
+        int numberOfColsInMatrix2 = matrix2.GetLength(1);
+
+        double[,] result = new double[numberOfRowsInMatrix1, numberOfColsInMatrix2];
+        for(int rowInMatrix1 = 0; rowInMatrix1 < numberOfRowsInMatrix1; rowInMatrix1++)
+        {
+            for (int colInMatrix2 = 0; colInMatrix2 < numberOfColsInMatrix2; colInMatrix2++)
+            {
+                double sum = 0;
+                for (int colInMatrix1 = 0; colInMatrix1 < numberOfColsInMatrix1; colInMatrix1++)
+                {
+                    sum += matrix1[rowInMatrix1, colInMatrix1] * matrix2[colInMatrix1, colInMatrix2];
+                }
+                result[rowInMatrix1, colInMatrix2] = sum;
+            }
+        }
+
+        return result;
+
+    }
+
+    //The PerformOperation method takes two matrices and an operation as input and performs the specified operation on each element of the matrices.
+    //n a neural network, element-wise operations are commonly used during the training process to update the weights based on the calculated error. The PerformOperation method allows for flexible and efficient computation of element-wise operations, such as addition, subtraction, and multiplication.
+    //By using a nested loop, the method iterates over each element of the matrices and performs the specified operation based on the OPERATION parameter. The result is stored in a new matrix, which is then returned.
+    //For example, during the training process, the PerformOperation method is used to subtract the predicted output from the desired output to calculate the error. It is also used to multiply the error with the derivative of the sigmoid function to adjust the weights. These element-wise operations are essential for updating the weights and improving the performance of the neural network.
+    private double[,] PerformOperation(double[,] matrix1, double[,] matrix2, OPERATION operation)
+    {
+        int numberOfRows = matrix1.GetLength(0);
+        int numberOfCols = matrix1.GetLength(1);
+        double[,] result = new double[numberOfRows, numberOfCols];
+        for (int row = 0; row < numberOfRows; row++)
+        {
+            for (int col = 0; col < numberOfCols; col++)
+            {
+                switch (operation)
+                {
+                    case OPERATION.ADD:
+                        result[row, col] = matrix1[row, col] + matrix2[row, col];
+                        break;
+                    case OPERATION.SUBTRACT:
+                        result[row, col] = matrix1[row, col] - matrix2[row, col];
+                        break;
+                    case OPERATION.MULTIPLY:
+                        result[row, col] = matrix1[row, col] * matrix2[row, col];
+                        break;
+                }
+            }
+        }
+        return result;
+    }
+
+    public double[,] Think(double[,] inputs)
+    {
+        return Activate(DotProduct(inputs, weights), false);
+    }
+
+}
+
+public static class Extensions
+{
+    //Extension method to transpose a 2D array
+    //The Transpose method is an extension method that transposes a 2D array.
+    //Transposing a matrix means converting its rows into columns and its columns into rows.
+    //This is useful in various mathematical and computational operations.
+   //The Transpose method achieves this by creating a new 2D array with the dimensions of the transposed matrix.
+   //It then iterates over the original matrix and assigns the values to the corresponding positions in the transposed matrix.
+    public static double[,] Transpose(this double[] array, int rows, int columns)
+    {
+        double[,] result = new double[columns, rows];
+        for (int row = 0; row < rows;row++)
+        {
+            for (int col = 0; col < columns; col++)
+            {
+                result[col, row] = array[row * columns + col];
+            }
+        }
+        return result;
+    }
+}
+
+
+```
+
+## Real world applications of Neural Networks
+- ![alt text](image-69.png)
+- ![alt text](image-70.png)
+- Neural networks are used in healthcare like radiology.
+- Also used for natural language processing
+- Can be used in self-driving cars
+- In finance industry, can be used to detect frauds
+- Also allow robots to view their environment
+
+## Why we need sigmoid function?
+- A neural network is like a brain-inspired system in a computer that learns to make decisions or predictions. It’s made of layers of "neurons" (small units) that process numbers and pass them along. These neurons take inputs (like numbers), do some math, and produce an output.
+
+- The problem is: the raw output of a neuron (after doing some math) can be any number, like -5, 10, or 1000. But in many cases, we need the output to be in a specific range (like 0 to 1) to make sense for things like probabilities or decisions. That’s where the sigmoid function comes in!
+- The sigmoid function is a mathematical formula that "squashes" any number into a range between 0 and 1. It’s shaped like an "S" curve and looks like this:
+- ![alt text](image-71.png)
+- x is the input number (can be anything: positive, negative, big, small).
+- e is a special math constant (~2.718).
+- The output is always between 0 and 1.
+- How it Works:
+- If x is a big positive number (e.g., 10), sigmoid output is close to 1.
+- If x is a big negative number (e.g., -10), sigmoid output is close to 0.
+- If x is 0, sigmoid output is 0.5.
+- This makes it perfect for situations where we want to interpret the output as a probability (like "how likely is this to be true?").
+- Neural networks often need to:
+- Make Decisions: For example, "Is this a cat in the picture? Yes or No."
+- Learn: Adjust their internal math based on how wrong their predictions are.
+- The sigmoid function helps with both:
+- Squashing Outputs: It turns raw numbers into a 0-to-1 range, which can represent probabilities or "confidence levels."
+- Smooth Learning: Its "S" shape is smooth and gradual, which helps the network learn by giving it a way to tweak its predictions little by little (using something called "gradient descent").
+- Without sigmoid (or similar functions), the neuron outputs could be all over the place, making it hard to interpret or train the network.
+- Imagine you’re building a tiny neural network to decide: "Is this a sunny day?" based on two inputs:
+- Temperature (e.g., 80°F).
+- Cloud cover (e.g., 20% cloudy).
+- Step 1: Raw Math in a Neuron
+- The neuron takes these inputs, multiplies them by "weights" (importance factors), adds them up, and gets a number. Let’s say:
+
+- Temperature (80) × Weight (0.1) = 8
+- Cloud cover (20) × Weight (-0.2) = -4
+- Total = 8 + (-4) = 4
+- So, the neuron’s raw output is 4. What does "4" mean? It’s not clear—it’s just a number!
+
+- Step 2: Apply Sigmoid
+- Now, plug 4 into the sigmoid function:
+- ![alt text](image-72.png)
+- The output is 0.982 (close to 1). This could mean "98.2% chance it’s a sunny day!" That’s way easier to understand than "4."
