@@ -1120,3 +1120,327 @@ public static class Extensions
 - Now, plug 4 into the sigmoid function:
 - ![alt text](image-72.png)
 - The output is 0.982 (close to 1). This could mean "98.2% chance it’s a sunny day!" That’s way easier to understand than "4."
+
+
+## Machine Learning with .NET
+- Open source ML framework developed by Microsoft. 
+- Enables developers to build and incorporate ML models into .NET Applications 
+- It provides a set of tools, libraries, and APIs that streamline the process of creating, training,and deploying machine learning models, all within the familiar environment of the dotnet ecosystem.
+- ![alt text](image-73.png)
+### Workflow of ML.NET 
+- ![alt text](image-74.png)
+### Applications of ML.NET 
+- Ml.net supports NLP tasks such as sentiment analysis, named entity recognition and text classification, enabling developers to analyze and extract insights from textual data.
+- Ml.net includes components for computer vision tasks such as image classification, object detection,
+and image segmentation, allowing developers to build applications that understand and interpret visual
+information.
+- ![alt text](image-75.png)
+- Add the following nuget package for incorporating ML.NET in our application 
+```shell
+dotnet add package Microsoft.ML
+dotnet add package Microsoft.ML.FastTree
+```
+### We will create a program using ML.NET which will perform regression on a given dataset(housing-data) and predict house prices 
+- The code loads housing data, creates a machine learning pipeline, trains a regression model, makes predictions, evaluates the model's performance, and prints the evaluation metrics.
+
+- MLContext mlContext = new MLContext();: This line creates an instance of the MLContext class, which is the main entry point for ML.NET functionality. It provides the environment for creating and executing machine learning workflows.
+  
+- IDataView data = mlContext.Data.LoadFromTextFile<HousingData>("housing-data.csv", separatorChar: ',');: This line loads the housing data from a text file called "housing-data.csv" and converts it into an IDataView object. The LoadFromTextFile method is used to read the data from the file, and the generic type parameter HousingData specifies the class that represents the structure of the data.
+  
+- string[] featureColumns = { "SquareFeet", "Bedrooms" };: This line defines an array of strings that represents the names of the columns in the housing data that will be used as features for the regression task. In this case, the "SquareFeet" and "Bedrooms" columns are selected as features.
+  
+- string labelColumn = "Price";: This line defines a string variable that represents the name of the column in the housing data that will be used as the label for the regression task. In this case, the "Price" column is selected as the label.
+  
+- var pipeline = mlContext.Transforms.Concatenate("Features", featureColumns).Append(mlContext.Regression.Trainers.FastTree(labelColumnName: labelColumn));: This line creates a machine learning pipeline. The Concatenate method is used to combine the feature columns into a single column called "Features". The Append method is used to add a regression trainer to the pipeline. In this case, the FastTree trainer is used, which is a decision tree-based regression algorithm.
+  
+- var model = pipeline.Fit(data);: This line trains the machine learning model by fitting the pipeline to the loaded data. The Fit method takes the data as input and returns a trained model.
+  
+- var prediction = model.Transform(data);: This line uses the trained model to make predictions on the same data that was used for training. The Transform method takes the data as input and returns a new IDataView object containing the predicted values.
+  
+- var metrics = mlContext.Regression.Evaluate(prediction, labelColumnName: labelColumn);: This line evaluates the performance of the model by comparing the predicted values with the actual values in the data. The Evaluate method takes the predicted values and the label column name as input and returns a set of regression evaluation metrics.
+  
+- Console.WriteLine($"Mean Absolute Error: {metrics.MeanAbsoluteError}");: This line prints the mean absolute error metric, which measures the average absolute difference between the predicted and actual values.
+  
+- Console.WriteLine($"Root Mean Squared Error: {metrics.RootMeanSquaredError}");: This line prints the root mean squared error metric, which measures the square root of the average squared difference between the predicted and actual values.
+
+```c#
+ using Microsoft.ML;
+using Microsoft.ML.Data;
+
+
+MLContext mlContext = new MLContext();
+IDataView data = mlContext.Data.LoadFromTextFile<HousingData>("housing-data.csv", separatorChar: ',');
+string[] featureColumns = { "SquareFeet", "Bedrooms" };
+string labelColumn = "Price";
+
+// Define the training pipeline
+var pipeline = mlContext.Transforms.Concatenate("Features", featureColumns)
+    .Append(mlContext.Regression.Trainers.FastTree(labelColumnName: labelColumn));
+
+// Train the model
+var model = pipeline.Fit(data);
+
+// Make predictions
+var prediction = model.Transform(data);
+
+// Evaluate the model
+var metrics = mlContext.Regression.Evaluate(prediction, labelColumnName: labelColumn);
+
+// Print the evaluation metrics
+Console.WriteLine($"Mean Absolute Error: {metrics.MeanAbsoluteError}");
+Console.WriteLine($"Root Mean Squared Error: {metrics.RootMeanSquaredError}");
+
+
+// Define a class to hold the housing data
+public class HousingData
+{
+    [LoadColumn(0)]
+    public float SquareFeet { get; set; }
+
+    [LoadColumn(1)]
+    public float Bedrooms { get; set; }
+
+    [LoadColumn(2)]
+    public float Price { get; set; }
+}
+
+// Define a class to hold the housing prediction
+public class HousingPrediction
+{
+    [ColumnName("Score")]
+    public float Price { get; set; }
+}
+
+```
+### Data Preparation and Loading in ML.NET
+- ML.NET provides various methods for loading data, including loading from text files, databases and in-memory collections.
+- If the data is already available in memory as a collection(e.g a list or an array), we can use the LoadFromEnumerable() method to load it directly into ML.NET. This is useful when your data is relatively small and can fit into memory. 
+- If the data is stored in a database, we can use the LoadFromDatabase() to load it into ML.NET. 
+- This method allows us to specify a database connection string and SQL query to retrieve the data.
+- If our text file contains a header row with column names, we can use the LoadFromTextFileWithHeader method to load the data while automatically inferring the column types. 
+- If our data is stored in JSON format, we can use the LoadFromJson() method to load it into ML.NET. This method allows us to specify the JSON file path and the data schema. 
+- If our data is in Apache Parquet format, we can use the LoadFromParquetFile() method to load it into ML.NET. Parquet is a columnar storage format that is efficient for large datasets. 
+- ![alt text](image-76.png)
+- Ml.net provides methods for cleaning data such as replace missing values, filter rows by missing values, and remove duplicates.
+- Ml.net provides transformers for feature engineering tasks such as concatenate, normalize, and one
+hot encoding.
+- Split your data into training and testing sets to evaluate your model's Performance. Ml.net provides methods for splitting data such as train test, split and cross validation.
+- Ml.net provides transformers for normalization such as normalize min max and normalize mean variance.
+- Pipeline data preparation steps create a data preparation pipeline to automate and streamline the data preparation process.
+
+### Feature Engineering in ML.NET 
+- Feature engineering is the process of creating new features from existing ones or transforming existing features to improve the performance of machine learning models. 
+- It is like giving our model the right tools to make accurate predictions.
+- Plays crucial role in success of ML models. 
+- By engineering meaningful features, we can capture more relevant information from the data, reduce
+noise, and improve the model's ability to generalize to unseen data.
+- Good feature engineering can make or break a machine learning model.
+- In machine learning, features are the pieces of information (or input variables) that a model uses to make predictions. For example, if you’re predicting whether someone will buy a product, features might include their age, income, or location. Feature engineering is the process of preparing and improving these features so that your machine learning model can learn from them more effectively. It’s like organizing and polishing raw data to help the model do its job better.
+- In ML.NET, feature engineering involves transforming raw data into a format that the model can understand, creating new useful features, and selecting the most relevant ones. ML.NET makes this easier by providing tools called transformers, which you can chain together in a pipeline to preprocess your data before training a model.
+- Transforming existing features: Turning data into a usable form (e.g., converting text or categories into numbers).
+- Creating new features: Combining or modifying existing data to make it more meaningful.
+- Selecting features: Picking the most important ones to avoid confusing the model with irrelevant details.
+- Imagine you have a dataset about houses with these columns:
+- Number of bedrooms (e.g., 3)
+- Size in square feet (e.g., 1500)
+- Age of the house (e.g., 10 years)
+- Price (e.g., $300,000)
+- Your goal is to predict the price of a house based on the other columns.
+- Here’s how feature engineering comes into play:
+- Using Existing Features
+You can use "number of bedrooms," "size," and "age" directly as features. These are already numbers, so the model can work with them. But we can do more to improve things!
+- Creating a New Feature
+What if the price depends not just on size, but on how spacious each bedroom feels? You could create a new feature called size per bedroom by dividing "size" by "number of bedrooms" (e.g., 1500 ÷ 3 = 500 square feet per bedroom). This new feature might give the model extra insight into what makes a house valuable.
+- Scaling Features
+Notice that "size" (1500) is much bigger than "age" (10) or "bedrooms" (3). Some machine learning algorithms get confused when features are on different scales. In ML.NET, you can use a transformer like NormalizeMinMax to adjust all features to a range like 0 to 1, making them easier for the model to compare.
+
+```c#
+ var pipeline = mlContext.Transforms.NormalizeMinMax("SizeNormalized", "Size")
+    .Append(mlContext.Transforms.NormalizeMinMax("AgeNormalized", "Age"))
+    .Append(mlContext.Transforms.Concatenate("Features", "SizeNormalized", "AgeNormalized", "Bedrooms"));
+
+```
+#### Feature Engineering Techniques
+- Normalization 
+- ![alt text](image-77.png)
+- ![alt text](image-78.png)
+- OneHotEncoding is a technique used in machine learning to convert categorical data—information that represents categories or labels, such as colors (red, blue, green), sizes (small, medium, large), or countries (USA, Canada, Mexico)—into a numerical format that machine learning algorithms can understand. Since most machine learning models work with numbers rather than text or labels, OneHotEncoding provides a way to represent categories in a way that’s suitable for these algorithms.
+- Machine learning algorithms often assume that numerical data has a natural order or magnitude. For example, if you assign numbers to categories like this:
+
+Red = 1
+Blue = 2
+Green = 3
+The model might incorrectly assume that green (3) is "greater" than red (1), implying a ranking or relationship that doesn’t exist—colors are just different, not ordered. OneHotEncoding solves this by representing each category as a binary vector, ensuring that categories are treated independently without suggesting any hierarchy.
+- ![alt text](image-79.png)
+
+```c#
+ using Microsoft.ML;
+using Microsoft.ML.Data;
+
+
+MLContext mlContext = new MLContext();
+IDataView data = mlContext.Data.LoadFromTextFile<HousingData>("housing-data.csv", separatorChar: ',');
+
+// Define the data preparation pipeline
+// Convert the SquareFeet column to a Single type
+// Normalize the SquareFeet column
+// Concatenate the SquareFeet and Bedrooms columns into a Features column
+// One-hot encode the Neighborhood column
+
+var dataPipeline = 
+    mlContext.Transforms.Conversion.ConvertType("SquareFeet", outputKind: DataKind.Single)
+    .Append(mlContext.Transforms.NormalizeMinMax("SquareFeet"))
+    .Append(mlContext.Transforms.Concatenate("Features", "SquareFeet", "Bedrooms"))
+    .Append(mlContext.Transforms.Categorical.OneHotEncoding("Neighborhood"));
+
+// Fit and transform the data
+var transformedData = dataPipeline.Fit(data).Transform(data);
+
+// Print the transformed data
+var transformedDataEnumerable = mlContext.Data.CreateEnumerable<TransformedHousingData>(transformedData, reuseRowObject: false).ToList();
+
+foreach (var item in transformedDataEnumerable)
+{
+    Console.WriteLine($"SquareFeet: {item.SquareFeet}," +
+        $" Bedrooms: {item.Bedrooms}, " +
+        $"Price: {item.Price}, " +
+        $"Features: [{string.Join(", ", item.Features)}], " +
+        $"Neighborhood: [{string.Join(", ", item.Neighborhood)}]");
+}
+
+```
+
+## Model Selection and Evaluation in ML.NET 
+- The model selection process involves choosing the best algorithm and hyper-parameters for our machine learning task. 
+- ![alt text](image-80.png)
+- ![alt text](image-81.png)
+- ![alt text](image-82.png)
+
+```c#
+ using Microsoft.ML;
+using Microsoft.ML.Data;
+
+
+static void EvaluateMetrics(string modelName, BinaryClassificationMetrics metrics)
+{
+    Console.WriteLine($"{modelName} - Accuracy:{metrics.Accuracy:0.##}");
+    Console.WriteLine($"{modelName} - AUC:{metrics.AreaUnderRocCurve:0.##}");
+}
+
+var context = new MLContext();
+var data = context.Data.LoadFromTextFile<DataPoint>("data.csv", separatorChar: ',', hasHeader:true);
+
+// Split the data into training and test sets
+var trainTestSplit = context.Data.TrainTestSplit(data, testFraction: 0.2);
+
+// Train the model
+// Define the pipeline
+// Concatenate the features into a single column
+// Append the logistic regression trainer
+// The label column is the "Label" column
+// The maximum number of iterations is 100
+// context.Transforms.Concatenate("Features", "Feature1", "Feature2") is a transformation step that concatenates multiple input features into a single column.
+// In this example, we are concatenating two features, "Feature1" and "Feature2", into a new column called "Features".
+// This transformation is useful when you want to combine multiple features into a single input for the model.
+// Append(context.BinaryClassification.Trainers.SdcaLogisticRegression(labelColumnName:"Label", maximumNumberOfIterations: 100)) is the trainer step that appends a logistic regression trainer to the pipeline. The trainer is responsible for training the model using the transformed data. In this example, we are using the SdcaLogisticRegression trainer, which is a type of logistic regression algorithm.
+// We specify the label column name as "Label" and set the maximum number of iterations to 100.
+var logisticRegressionPipeline = context.Transforms.Concatenate("Features", "Feature1", "Feature2")
+    .Append(context.BinaryClassification.Trainers.SdcaLogisticRegression(labelColumnName:"Label", maximumNumberOfIterations: 100));
+
+
+var fastTreePipeline = context.Transforms.Concatenate("Features", "Feature1", "Feature2")
+    .Append(context.BinaryClassification.Trainers.FastTree(labelColumnName: "Label", numberOfLeaves: 50, numberOfTrees:100));
+
+Console.WriteLine("Training Logistic Regression model...");
+var logisticRegressionModel = logisticRegressionPipeline.Fit(trainTestSplit.TrainSet);
+
+Console.WriteLine("Training FastTree model...");
+var fastTreeModel = fastTreePipeline.Fit(trainTestSplit.TrainSet);
+
+// Evaluate the models
+Console.WriteLine("Evaluating the Logistic Regression Model...");
+var logisticRegressionPredictions = logisticRegressionModel.Transform(trainTestSplit.TestSet);
+var logisticRegressionMetrics = context.BinaryClassification.Evaluate(logisticRegressionPredictions, "Label");
+EvaluateMetrics("Logistic Regression", logisticRegressionMetrics);
+
+Console.WriteLine("Evaluating the FastTree Model...");
+var fastTreePredictions = fastTreeModel.Transform(trainTestSplit.TestSet);
+var fastTreeMetrics = context.BinaryClassification.Evaluate(fastTreePredictions, "Label");
+EvaluateMetrics("FastTree", fastTreeMetrics);
+
+if(logisticRegressionMetrics.Accuracy > fastTreeMetrics.Accuracy)
+{
+    Console.WriteLine("Logistic Regression Model is the better model");
+} else if(logisticRegressionMetrics.Accuracy < fastTreeMetrics.Accuracy)
+{
+    Console.WriteLine("FastTree Model is the better model");
+}
+else
+{
+    Console.WriteLine("Both models are equally good");
+}
+
+public class DataPoint
+{
+    [LoadColumn(0)]
+
+    public float Feature1 { get; set; }
+    [LoadColumn(1)]
+    public float Feature2 { get; set; }
+
+    [LoadColumn(2)]
+    public bool Label { get; set; }
+}
+
+public class Prediction
+{
+    [ColumnName("Score")]
+    public float Score { get; set; }
+
+    [ColumnName("Probability")]
+    public float Probability { get; set; }
+}
+
+
+
+```
+
+## Training and Tuning the models in ML.NET 
+- ![alt text](image-83.png)
+- ![alt text](image-84.png)
+```c#
+ var logisticRegressionPipeline = context.Transforms.Concatenate("Features", "Feature1", "Feature2")
+    .Append(context.BinaryClassification.Trainers.SdcaLogisticRegression(labelColumnName:"Label", maximumNumberOfIterations: 100));
+
+
+var fastTreePipeline = context.Transforms.Concatenate("Features", "Feature1", "Feature2")
+    .Append(context.BinaryClassification.Trainers.FastTree(labelColumnName: "Label", numberOfLeaves: 50, numberOfTrees:100));
+
+Console.WriteLine("Training Logistic Regression model...");
+var logisticRegressionModel = logisticRegressionPipeline.Fit(trainTestSplit.TrainSet);
+
+Console.WriteLine("Training FastTree model...");
+var fastTreeModel = fastTreePipeline.Fit(trainTestSplit.TrainSet);
+```
+
+### Model Deployment and Integration with ML.NET 
+- Model deployment involves making the trained machine learning model available for use in Production Environments.
+- ![alt text](image-85.png)
+- Model serialization.
+- The trained Ml.net model needs to be serialized into a format that can be easily loaded and used by
+production systems.
+- Ml.net supports model serialization to different formats, including Onnx, Open Neural Network Exchange, and the native Ml.net format model hosting.
+- Once serialized, the model needs to be hosted within an application or service where it can receive
+input data, make predictions, and return results.
+- This can be achieved by embedding the model within a web service, a serverless function, or a dedicated microservice.
+- Scalability and performance.
+- When deploying models into production, scalability and performance are crucial factors to consider.
+- Ml.net models can be deployed to scalable cloud platforms like Azure, where they can benefit from auto scaling and high performance infrastructure.
+- ![alt text](image-86.png)
+- ![alt text](image-87.png)
+- Models can also be packaged into docker containers.
+- Ml.net supports building and deploying complex model pipelines that include pre-processing, feature
+engineering, and model inference steps.
+- These pipelines can be integrated into existing data processing pipelines or workflows to automate the end to end machine learning process.(MLOps)
+- Implement logging and monitoring mechanisms to track model performance, detect anomalies and troubleshoot issues in production.
+- Maintain version control for deployed models to track changes.
