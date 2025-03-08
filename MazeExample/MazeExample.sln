@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MazeExample", "MazeExample.csproj", "{DA6E102E-837E-4A33-9D74-4250248FFFE6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MazeExample", "MazeExample.csproj", "{DA6E102E-837E-4A33-9D74-4250248FFFE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNetwork", "..\NeuralNetwork\NeuralNetwork.csproj", "{442B5BF9-7D67-4544-8EBF-26B3DC5E93BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeuralNetwork", "..\NeuralNetwork\NeuralNetwork.csproj", "{442B5BF9-7D67-4544-8EBF-26B3DC5E93BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MachineLearningExample", "..\MachineLearningExample\MachineLearningExample.csproj", "{B3678AD6-008C-425B-BB13-A0E83AAF934A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MachineLearningExample", "..\MachineLearningExample\MachineLearningExample.csproj", "{B3678AD6-008C-425B-BB13-A0E83AAF934A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MachineLearningModelSelection", "..\MachineLearningModelSelection\MachineLearningModelSelection.csproj", "{7B48438E-1CA5-44B5-9967-25E0110E55B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MachineLearningModelSelection", "..\MachineLearningModelSelection\MachineLearningModelSelection.csproj", "{7B48438E-1CA5-44B5-9967-25E0110E55B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SentimentAnalysis", "..\SentimentAnalysis\SentimentAnalysis.csproj", "{D6108235-9797-4B3C-9F21-006C1B4A7586}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{7B48438E-1CA5-44B5-9967-25E0110E55B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B48438E-1CA5-44B5-9967-25E0110E55B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B48438E-1CA5-44B5-9967-25E0110E55B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6108235-9797-4B3C-9F21-006C1B4A7586}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6108235-9797-4B3C-9F21-006C1B4A7586}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6108235-9797-4B3C-9F21-006C1B4A7586}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6108235-9797-4B3C-9F21-006C1B4A7586}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
