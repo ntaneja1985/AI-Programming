@@ -1683,3 +1683,1103 @@ namespace Classification
 
 
 ```
+
+## Building an Image Classification AI 
+- Image classification in machine learning is a specialized form of classification where the input data consists of images, and the goal is to categorize these images into predefined classes or labels 
+- Images are represented a grid of pixel values with each **pixel encoding color or intensity information**. 
+- **Image classification algorithms analyze these pixel values** to identify patterns and features that distinguish one class of images from another.
+- For example, in a data set of animal images, the algorithm might learn that certain patterns of shapes, colors, and textures are associated with dogs, while others are associated with cats.
+- It might recognize that dogs often have pointy ears and snouts, while cats have rounder faces and whiskers.
+- To perform image classification, machine learning models typically use deep learning techniques such
+as convolutional neural networks or CNNs.
+- CNNs are specifically designed to work with image data, and are capable of automatically learning hierarchical representations of features from raw pixel values.
+- **During training, the CNN learns to extract meaningful features from the images** at different levels of abstraction, starting from simple features like edges and textures, and progressing to more complex concepts like object shapes and patterns.
+- These learned features are then used to make predictions about the class of new, unseen images.
+- ![alt text](image-93.png)
+- ![alt text](image-94.png)
+- ![alt text](image-95.png)
+- ![alt text](image-96.png)
+- ![alt text](image-97.png)
+- ![alt text](image-98.png)
+- Once we create our image classification project, we need to install the following packages:
+```shell 
+dotnet add package Microsoft.ML 
+dotnet add package Microsoft.ML.ImageAnalytics
+dotnet add package Microsoft.ML.TensorFlow
+dotnet add package Microsoft.ML.Vision 
+dotnet add package SciSharp.TensorFlow.Redist
+dotnet add package  TensorFlow.NET
+```
+- Now we will first of all load the data from the images folder and put in inside a data view 
+- Inside this dataview, we will have a path to the file and its corresponding label(kitten or dog)
+- We will also shuffle the data so as to not have continuous filenames with puppy or kittens.
+```c#
+ using Microsoft.ML;
+using Microsoft.ML.Data;
+using Microsoft.ML.Vision;
+using static Microsoft.ML.DataOperationsCatalog;
+
+public class ImageData
+{
+    [LoadColumn(0)]
+    public string? ImagePath { get; set; }
+
+    [LoadColumn(1)]
+    public string Label { get; set; }
+}
+
+class InputData
+{
+    public byte[] Image { get; set; }
+    public uint LabelKey { get; set; }
+
+    public string ImagePath { get; set; }
+    public string Label { get; set; }
+}
+
+public class Program
+{
+    static string dataFolder = "C:\\GithubCode\\AI-Programming\\ImageClassification\\Data";
+
+    private static IEnumerable<ImageData> LoadImagesFromDirectory(string folder)
+    {
+        var files = Directory.GetFiles(folder, "*", searchOption: SearchOption.AllDirectories);
+        foreach(var file in files)
+        {
+            if ((Path.GetExtension(file) != ".jpg") &&
+                (Path.GetExtension(file) != ".png") &&
+                (Path.GetExtension(file) != ".jpeg"))
+                continue;
+
+            string label = Path.GetFileNameWithoutExtension(file).Trim();
+            label = label.Substring(0, label.Length - 1);
+            yield return new ImageData()
+            {
+                ImagePath = file,
+                Label = label
+            };
+        }
+    }
+
+    public static void PrintDataView(IDataView dataView)
+    {
+        var preview = dataView.Preview();
+        foreach (var row in preview.RowView)
+        {
+            foreach (var kvp in row.Values)
+            {
+                Console.Write($"{kvp.Key}:{kvp.Value} ");
+            }
+            Console.WriteLine();
+        }
+    }
+
+        public static void Main()
+    {
+        MLContext mLContext = new MLContext();
+        IEnumerable<ImageData> images = LoadImagesFromDirectory(dataFolder);
+        IDataView imageData = mLContext.Data.LoadFromEnumerable(images);
+
+        //Shuffle the data 
+        IDataView shuffledData = mLContext.Data.ShuffleRows(imageData);
+
+        PrintDataView(shuffledData);
+
+    }
+}
+
+```
+
+### Training the Model
+- We first map the string values of the Labels to the numeric keys
+- This is because ML algorithms work with numeric labels
+- We also load the raw image in bytes from the specified image folder and stores them in Image column
+- Then the pre-processed data is split into training set and test set. 
+- Then we also set options for the image classification trainer. This options determine how the model will be trained. 
+- We specify the column name that contains the raw image data and which column contains the numeric label.
+- Then we create the training pipeline. 
+- We also need to convert the predicted label keys back to their string values(remember they will be numeric)
+- Then we pass the test set to the trained model and check the output predictions
+```c#
+ /*
+ In this part, a preprocessing pipeline is created using the mLContext.Transforms API. The pipeline consists of two transformations:
+•	MapValueToKey: This transformation maps the string labels in the "Label" column to numeric keys in the "LabelKey" column. 
+This is necessary because machine learning algorithms typically work with numeric labels. 
+For example, if you have labels like "cat", "dog", and "bird", they will be mapped to numeric keys like 0, 1, and 2.
+•	LoadRawImageBytes: This transformation loads the raw image bytes from the specified image folder and stores them in the "Image" column. 
+It takes the "ImagePath" column as input, which contains the file paths of the images. The loaded image bytes can be used as input for image classification models.
+Example: Suppose you have a dataset with the following rows: | ImagePath       | Label  | |-----------------|--------| | image1.jpg      | cat    | | image2.jpg      | dog    | | image3.jpg      | bird   |
+After applying the preprocessing pipeline, the resulting dataset will have the following columns: | ImagePath       | Label  | LabelKey | Image (raw image bytes) | |-----------------|--------|----------|------------------------| | image1.jpg      | cat    | 0        | [raw image bytes]      | | image2.jpg      | dog    | 1        | [raw image bytes]      | | image3.jpg      | bird   | 2        | [raw image bytes]      |
+ */
+var preprocessingPipeline = mLContext.Transforms.Conversion
+    .MapValueToKey(inputColumnName:"Label", outputColumnName:"LabelKey")
+    .Append(mLContext.Transforms.LoadRawImageBytes(
+        outputColumnName: "Image",
+        imageFolder: dataFolder,
+        inputColumnName: "ImagePath"));
+
+
+
+
+IDataView preProcessedData = preprocessingPipeline.Fit(shuffledData).Transform(shuffledData);
+
+/*
+ In this part, the preprocessed data is split into a training set and a test set using the TrainTestSplit method. 
+The testFraction parameter specifies the fraction of data to be used for testing (in this case, 40%). The remaining data is used for training.
+ Example: Suppose the preprocessed data contains 100 rows. After the train-test split, the training set will contain 60 rows (60% of the data) and the test set will contain 40 rows (40% of the data).
+ */
+TrainTestData trainTestData = mLContext.Data.TrainTestSplit(preProcessedData, testFraction: 0.4);
+IDataView trainSet = trainTestData.TrainSet;
+IDataView testSet = trainTestData.TestSet;
+
+
+/*
+In this part, the options for the image classification trainer are set. These options define how the model will be trained. Here are the key options:
+•	FeatureColumnName: Specifies the name of the column that contains the input image data (raw image bytes).
+•	LabelColumnName: Specifies the name of the column that contains the numeric label keys.
+•	ValidationSet: Specifies the test set to be used for validation during training.
+•	Arch: Specifies the architecture of the image classification model. In this case, the ResNet v2 101 architecture is used.
+•	MetricsCallback: Specifies a callback function that will be called during training to print the metrics (e.g., accuracy, loss) to the console.
+•	TestOnTrainSet: Specifies whether to evaluate the model on the training set during training. In this case, it is set to false.
+•	ReuseTrainSetBottleneckCachedValues and ReuseValidationSetBottleneckCachedValues: These options control whether to reuse the cached bottleneck values during training. Bottleneck values are intermediate representations of the images used to speed up training.
+ 
+ */
+var classifierOptions = new ImageClassificationTrainer.Options()
+{
+    FeatureColumnName = "Image",
+    LabelColumnName = "LabelKey",
+    ValidationSet = testSet,
+    Arch = ImageClassificationTrainer.Architecture.ResnetV2101,
+    MetricsCallback = (metrics) => Console.WriteLine(metrics),
+    TestOnTrainSet = false,
+    ReuseTrainSetBottleneckCachedValues = true,
+    ReuseValidationSetBottleneckCachedValues = true,
+    //WorkspacePath = "C:\\GithubCode\\AI-Programming\\ImageClassification\\Data"
+};
+
+
+/*
+In this part, the training pipeline is created using the mLContext.MulticlassClassification.Trainers.ImageClassification method. 
+The pipeline consists of the image classification trainer followed by a transformation to map the predicted label keys back to their original string labels.
+Example: The training pipeline takes the preprocessed training set as input and trains an image classification model. 
+The trained model can then be used to make predictions on new images.
+ */
+var trainingPipeline = mLContext.MulticlassClassification.Trainers.ImageClassification(classifierOptions)
+                        .Append(mLContext.Transforms.Conversion.MapKeyToValue("PredictedLabel"));
+
+// Train the model
+// During the training process, the model learns patterns and relationships between the input images and their corresponding labels.
+// The trained model can then be used to make predictions on new, unseen images.
+ITransformer trainedModel = trainingPipeline.Fit(trainSet);
+
+```
+### Final code of image classification AI along with test results 
+```c#
+ using Microsoft.ML;
+using Microsoft.ML.Data;
+using Microsoft.ML.Vision;
+using static Microsoft.ML.DataOperationsCatalog;
+
+public class ImageData
+{
+    [LoadColumn(0)]
+    public string? ImagePath { get; set; }
+
+    [LoadColumn(1)]
+    public string Label { get; set; }
+}
+
+class InputData
+{
+    public byte[] Image { get; set; }
+    public uint LabelKey { get; set; }
+
+    public string ImagePath { get; set; }
+    public string Label { get; set; }
+}
+
+class  Output
+{
+    public string ImagePath { get; set; }
+    public string Label { get; set; }
+    public string PredictedLabel { get; set; }
+}
+
+public class Program
+{
+    static string dataFolder = "C:\\GithubCode\\AI-Programming\\ImageClassification\\Data";
+
+    private static IEnumerable<ImageData> LoadImagesFromDirectory(string folder)
+    {
+        var files = Directory.GetFiles(folder, "*", searchOption: SearchOption.AllDirectories);
+        foreach(var file in files)
+        {
+            if ((Path.GetExtension(file) != ".jpg") &&
+                (Path.GetExtension(file) != ".png") &&
+                (Path.GetExtension(file) != ".jpeg"))
+                continue;
+
+            string label = Path.GetFileNameWithoutExtension(file).Trim();
+            label = label.Substring(0, label.Length - 1);
+            yield return new ImageData()
+            {
+                ImagePath = file,
+                Label = label
+            };
+        }
+    }
+
+    public static void PrintDataView(IDataView dataView)
+    {
+        var preview = dataView.Preview();
+        foreach (var row in preview.RowView)
+        {
+            foreach (var kvp in row.Values)
+            {
+                Console.Write($"{kvp.Key}:{kvp.Value} ");
+            }
+            Console.WriteLine();
+        }
+    }
+
+    private static void OutputPrediction(Output prediction)
+    {
+
+        string imageName = Path.GetFileName(prediction.ImagePath);
+        Console.WriteLine($"Image: {imageName} | Actual Label: {prediction.Label} | Predicted Label: {prediction.PredictedLabel}");
+    }
+
+    private static void ClassifyMultiple(MLContext mLContext, IDataView data, ITransformer trainedModel)
+    {
+        IDataView predictedData = trainedModel.Transform(data);
+
+        var predictions = mLContext.Data.CreateEnumerable<Output>(predictedData, reuseRowObject: false).ToList();
+
+        Console.WriteLine("AI Predictions: ");
+        foreach (var prediction in predictions.Take(4))
+        {
+            OutputPrediction(prediction);
+        }
+    }
+
+        public static void Main()
+    {
+        MLContext mLContext = new MLContext();
+        IEnumerable<ImageData> images = LoadImagesFromDirectory(dataFolder);
+        IDataView imageData = mLContext.Data.LoadFromEnumerable(images);
+
+        //Shuffle the data 
+        IDataView shuffledData = mLContext.Data.ShuffleRows(imageData);
+
+        //PrintDataView(shuffledData);
+
+        /*
+         In this part, a preprocessing pipeline is created using the mLContext.Transforms API. The pipeline consists of two transformations:
+        •	MapValueToKey: This transformation maps the string labels in the "Label" column to numeric keys in the "LabelKey" column. 
+        This is necessary because machine learning algorithms typically work with numeric labels. 
+        For example, if you have labels like "cat", "dog", and "bird", they will be mapped to numeric keys like 0, 1, and 2.
+        •	LoadRawImageBytes: This transformation loads the raw image bytes from the specified image folder and stores them in the "Image" column. 
+        It takes the "ImagePath" column as input, which contains the file paths of the images. The loaded image bytes can be used as input for image classification models.
+        Example: Suppose you have a dataset with the following rows: | ImagePath       | Label  | |-----------------|--------| | image1.jpg      | cat    | | image2.jpg      | dog    | | image3.jpg      | bird   |
+        After applying the preprocessing pipeline, the resulting dataset will have the following columns: | ImagePath       | Label  | LabelKey | Image (raw image bytes) | |-----------------|--------|----------|------------------------| | image1.jpg      | cat    | 0        | [raw image bytes]      | | image2.jpg      | dog    | 1        | [raw image bytes]      | | image3.jpg      | bird   | 2        | [raw image bytes]      |
+         */
+        var preprocessingPipeline = mLContext.Transforms.Conversion
+            .MapValueToKey(inputColumnName:"Label", outputColumnName:"LabelKey")
+            .Append(mLContext.Transforms.LoadRawImageBytes(
+                outputColumnName: "Image",
+                imageFolder: dataFolder,
+                inputColumnName: "ImagePath"));
+
+
+
+
+        IDataView preProcessedData = preprocessingPipeline.Fit(shuffledData).Transform(shuffledData);
+
+        /*
+         In this part, the preprocessed data is split into a training set and a test set using the TrainTestSplit method. 
+        The testFraction parameter specifies the fraction of data to be used for testing (in this case, 40%). The remaining data is used for training.
+         Example: Suppose the preprocessed data contains 100 rows. After the train-test split, the training set will contain 60 rows (60% of the data) and the test set will contain 40 rows (40% of the data).
+         */
+        TrainTestData trainTestData = mLContext.Data.TrainTestSplit(preProcessedData, testFraction: 0.4);
+        IDataView trainSet = trainTestData.TrainSet;
+        IDataView testSet = trainTestData.TestSet;
+
+
+        /*
+        In this part, the options for the image classification trainer are set. These options define how the model will be trained. Here are the key options:
+        •	FeatureColumnName: Specifies the name of the column that contains the input image data (raw image bytes).
+        •	LabelColumnName: Specifies the name of the column that contains the numeric label keys.
+        •	ValidationSet: Specifies the test set to be used for validation during training.
+        •	Arch: Specifies the architecture of the image classification model. In this case, the ResNet v2 101 architecture is used.
+        •	MetricsCallback: Specifies a callback function that will be called during training to print the metrics (e.g., accuracy, loss) to the console.
+        •	TestOnTrainSet: Specifies whether to evaluate the model on the training set during training. In this case, it is set to false.
+        •	ReuseTrainSetBottleneckCachedValues and ReuseValidationSetBottleneckCachedValues: These options control whether to reuse the cached bottleneck values during training. Bottleneck values are intermediate representations of the images used to speed up training.
+         
+         */
+        var classifierOptions = new ImageClassificationTrainer.Options()
+        {
+            FeatureColumnName = "Image",
+            LabelColumnName = "LabelKey",
+            ValidationSet = testSet,
+            Arch = ImageClassificationTrainer.Architecture.ResnetV2101,
+            MetricsCallback = (metrics) => Console.WriteLine(metrics),
+            TestOnTrainSet = false,
+            ReuseTrainSetBottleneckCachedValues = true,
+            ReuseValidationSetBottleneckCachedValues = true,
+            //WorkspacePath = "C:\\GithubCode\\AI-Programming\\ImageClassification\\Data"
+        };
+
+
+        /*
+        In this part, the training pipeline is created using the mLContext.MulticlassClassification.Trainers.ImageClassification method. 
+        The pipeline consists of the image classification trainer followed by a transformation to map the predicted label keys back to their original string labels.
+        Example: The training pipeline takes the preprocessed training set as input and trains an image classification model. 
+        The trained model can then be used to make predictions on new images.
+         */
+        var trainingPipeline = mLContext.MulticlassClassification.Trainers.ImageClassification(classifierOptions)
+                                .Append(mLContext.Transforms.Conversion.MapKeyToValue("PredictedLabel"));
+
+        // Train the model
+        // During the training process, the model learns patterns and relationships between the input images and their corresponding labels.
+        // The trained model can then be used to make predictions on new, unseen images.
+        ITransformer trainedModel = trainingPipeline.Fit(trainSet);
+
+        //Responsible for using the trained model to make predictions on the test data and printing the results.
+        ClassifyMultiple(mLContext, testSet, trainedModel);
+
+    }
+}
+
+```
+
+## Coding a Regression AI 
+- Regression in machine learning is like trying to draw the best-fitting line through a scatter plot of points. 
+- (sizeOfHouse, Price)
+- ![alt text](image-99.png)
+- The goal of regression algorithms is to learn the relationship between the input features and the target variable, which is the value that we want to predict from the training data.
+- Once the model has learned this relationship, it can then make predictions on new, unseen data.
+- ![alt text](image-100.png)
+### Linear Regression
+- ![alt text](image-101.png)
+- ![alt text](image-102.png)
+- For example, suppose we want to predict the salary of employees based on their years of experience.
+- We collect data on employees years of experience and their corresponding salaries.
+- Using linear regression, we can fit a straight line to this data where the input feature.
+- Years of experience is used to predict the target variable salary.
+### Polynomial Regression 
+- Polynomial regression is an extension of linear regression that allows for more complex relationships between the input features and the target variable.
+- ![alt text](image-103.png)
+- ![alt text](image-104.png)
+### Decision Tree Regression (Generalize Data)
+- ![alt text](image-105.png)
+- ![alt text](image-106.png)
+- For example, suppose that we want to predict the price of a house based on its features such as size, number of bedrooms, and location.
+- A decision tree regression model would split the data into subsets based on these features.
+- Like houses with more than three bedrooms, houses larger than 2000ft², etc., and assign a constant
+value, an average price to each subset.
+- Advantages of this type of regression are that it can model non-linear relationships between the input features and the target variable.
+
+### Support Vector Regression(SVR)
+- ![alt text](image-107.png)
+- ![alt text](image-108.png)
+- Consider a scenario where we want to predict the fuel efficiency of a car based on its engine size,
+weight, and horsepower.
+- Support vector regression can be used to find the hyperplane that separates the data points with maximum margin, while minimizing the error between the predicted and actual fuel efficiency values.
+- ![alt text](image-109.png)
+- We first load the data into a DataView 
+- Then we split it into training and test sets 
+- Then we define a pipeline 
+- Inside the pipeline we first concatenate all the features into a single column 
+- Then we do one hot encoding on the neighborhood column
+- Remember, One-hot encoding is a technique used to convert categorical data into a numerical format that machine learning algorithms can use.
+- We copy the sale price to the label column 
+- Then we train the model 
+- Finally we test the trained model against a sample house data with values for bedrooms, neighborhood, bathrooms etc specified. 
+- Finally we create a prediction engine and provide the estimated sale price 
+```c#
+  using Microsoft.ML;
+using Microsoft.ML.Data;
+
+
+namespace HousePricePrediction
+{
+    public class HouseData
+    {
+        [LoadColumn(0)]
+        public float HouseSizeSqft { get; set; }
+
+        [LoadColumn(1)]
+        public float NumBedrooms { get; set; }
+
+        [LoadColumn(2)]
+        public float NumBathrooms { get; set; }
+
+        [LoadColumn(3)]
+        public string Neighborhood { get; set; }
+
+        [LoadColumn(4)]
+        public float SalePrice { get; set; }    
+    }
+
+    public class HousePrediction
+    {
+        [ColumnName("Score")]
+        public float PredictedSalePrice { get; set; }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var mlContext = new MLContext(seed: 0);
+            var dataPath = Path.Combine(Environment.CurrentDirectory, "house-price-data.csv");
+
+            /*
+             Specify the path to the data file containing the house price data and loads it into an IDataView object using the LoadFromTextFile method.
+             */
+            IDataView data = mlContext.Data.LoadFromTextFile<HouseData>(dataPath, hasHeader: true, separatorChar: ',');
+
+            /*
+             The TrainTestSplit method is used to split the data into a training set and a test set. The testFraction parameter specifies the fraction of the data that should be used for testing.
+             Data is split into training and testing datasets using the TrainTestSplit method, with 80% of the data used for training and 20% for testing.
+             */
+            var trainTestData = mlContext.Data.TrainTestSplit(data, testFraction: 0.2);
+            var trainData = trainTestData.TrainSet;
+            var testData = trainTestData.TestSet;
+
+            /*
+             The pipeline is defined using the Concatenate, OneHotEncoding, CopyColumns, and FastTreeRegression classes. 
+            The pipeline is used to concatenate the features into a single column, one-hot encode the neighborhood column, and copy the sale price column to the label column. 
+            The FastTreeRegression class is used to train the model.
+             */
+            var pipeline = mlContext.Transforms.Concatenate("Features", "HouseSizeSqft", "NumBedrooms", "NumBathrooms")
+                .Append(mlContext.Transforms.Categorical.OneHotEncoding("Neighborhood"))
+                .Append(mlContext.Transforms.Concatenate("Features", "Features", "Neighborhood"))
+                .Append(mlContext.Transforms.CopyColumns("Label", "SalePrice"))
+                .Append(mlContext.Regression.Trainers.FastTree(labelColumnName: "Label"));
+
+            /*
+             The Fit method is used to train the model using the training data.
+             */
+            var trainedModel = pipeline.Fit(trainData);
+
+            /*
+             The Transform method is used to make predictions on the test data.
+             */
+            var predictions = trainedModel.Transform(testData);
+
+            /*
+             The Evaluate method is used to evaluate the model using the test data and calculate the RSquared score and root mean squared error.
+             */
+            var metrics = mlContext.Regression.Evaluate(predictions);
+
+            //Console.WriteLine($"RSquared Score: {metrics.RSquared:0.##}");
+            //Console.WriteLine($"Root Mean Squared error: {metrics.RootMeanSquaredError:0.##}");
+
+
+            /*
+             The CreatePredictionEngine method is used to create a prediction engine for making predictions on new data.
+             */
+            var predictionEngine = mlContext.Model.CreatePredictionEngine<HouseData, HousePrediction>(trainedModel);
+
+            var houseData = new HouseData()
+            {
+                HouseSizeSqft = 2000,
+                NumBedrooms = 3,
+                NumBathrooms = 2,
+                Neighborhood = "Southwest"
+            };
+
+            /*
+             The Predict method is used to make a prediction using the prediction engine.
+             */
+            var prediction = predictionEngine.Predict(houseData);
+            Console.WriteLine($"Predicted Sale Price: ${prediction.PredictedSalePrice}");
+        }
+    }
+}
+
+```
+
+## Building a Forecasting AI
+- Forecasting in machine learning is like predicting the future based on past patterns and trends.
+- ![alt text](image-110.png)
+- ![alt text](image-111.png)
+- ![alt text](image-112.png)
+- ![alt text](image-113.png)
+- Forecasting in machine learning learning is ideally used in scenarios where there is a need to predict future events or outcomes based on historical data patterns. 
+- Investors and businesses use these forecasts for strategic planning, investment decisions, and risk
+management.
+- Workforce forecasting can be used to predict staffing needs, while energy forecasting can help utilities anticipate electricity demand.
+- ![alt text](image-114.png)
+- First we will load the data from the csv file. 
+- This file contains the date, high, open, low and closing price of stocks 
+- We will concatenate high, open and low prices of stocks into a single feature which will serve as input to the model
+- The output of our model will the closing price. 
+- This is the target variable that our model will try to predict. 
+- We will add the regression trainer to the pipeline, in out case, we will use FastTree algorithm.
+- We will then split our data set into training set and test set and generate predictions
+- Finally we will compare our predictions to the actual closing price of the stock 
+
+```c#
+ using Microsoft.ML;
+using Microsoft.ML.Data;
+
+namespace StockPriceForecasting
+{
+    class Program
+    {
+        public class StockData
+        {
+            [LoadColumn(0)]
+            public string Date { get; set; }
+
+            [LoadColumn(1)]
+            public float Open { get; set; }
+
+            [LoadColumn(2)]
+            public float High { get; set; }
+
+            [LoadColumn(3)]
+            public float Low { get; set; }
+
+            [LoadColumn(4)]
+            public float Close { get; set; }
+        }
+
+        public class StockPrediction
+        {
+            [ColumnName("Score")]
+            public float PredictedClose { get; set; }
+        }
+
+            static void Main(string[] args)
+        {
+            MLContext mlContext = new MLContext(seed: 0);
+
+            IDataView dataView = mlContext.Data.LoadFromTextFile<StockData>("stock_data.csv", hasHeader: true, separatorChar: ',');
+
+            var preview = dataView.Preview();
+
+            foreach (var row in preview.RowView)
+            {
+                Console.WriteLine($"{row.Values[0]} | {row.Values[1]}");
+            }
+
+            /*
+             1.	mlContext.Transforms.Concatenate("Features", "Open", "High", "Low"): 
+                This transformation concatenates the "Open", "High", and "Low" columns of the input data and creates a new column called "Features". 
+                The "Features" column will be used as input for the regression trainer.
+             2.	.Append(mlContext.Transforms.CopyColumns("Label", "Close")): 
+                This transformation copies the values from the "Close" column of the input data and creates a new column called "Label". 
+                The "Label" column represents the target variable that the regression trainer will try to predict.
+             3.	.Append(mlContext.Regression.Trainers.FastTree()): 
+                This appends the regression trainer to the pipeline. 
+                In this case, the FastTree regression trainer is used. 
+                The regression trainer will use the "Features" column as input and the "Label" column as the target variable to train a machine learning model.
+             */
+            var pipeline = mlContext.Transforms.Concatenate("Features", "Open", "High", "Low")
+                            .Append(mlContext.Transforms.CopyColumns("Label", "Close"))
+                            .Append(mlContext.Regression.Trainers.FastTree());
+
+            var trainTestData = mlContext.Data.TrainTestSplit(dataView, testFraction: 0.2);
+            var model = pipeline.Fit(trainTestData.TrainSet);
+
+            /*
+             Apply the trained model to the test dataset and generates predictions for the target variable. 
+            These predictions can be used to evaluate the accuracy of the machine learning model and compare them with the actual closing prices of the stocks.
+             */
+            var predictions = model.Transform(trainTestData.TestSet);
+
+            // Evaluate the model
+            var metrics = mlContext.Regression.Evaluate(predictions, labelColumnName: "Label", scoreColumnName: "Score");
+
+            Console.WriteLine($"R-Squared: {metrics.RSquared}");
+            Console.WriteLine($"Root Mean Squared Error: {metrics.RootMeanSquaredError}");
+
+            var predictedResult = mlContext.Data.CreateEnumerable<StockPrediction>(predictions, reuseRowObject: false).ToList();
+
+            var testData = mlContext.Data.CreateEnumerable<StockData>(trainTestData.TestSet, reuseRowObject: false).ToList();
+
+            /*
+               Iterate over two collections simultaneously: predictedResult and testData. 
+               It uses the Zip method to combine the elements of both collections into tuples (prediction, actual).
+               For each pair of elements, the loop prints the predicted and actual values of the stock's closing price using the Console.WriteLine method. 
+               The predicted value is accessed through the prediction.PredictedClose property, and the actual value is accessed through the actual.Close property.
+               In other words, this loop is used to compare the predicted closing prices of stocks with their actual closing prices. It can be helpful for evaluating the accuracy of the machine learning model used to make the predictions.
+
+             */
+            foreach (var (prediction, actual) in predictedResult.Zip(testData, (p, a) => (p, a)))
+            {
+                Console.WriteLine($"Predicted: {prediction.PredictedClose}, Actual: {actual.Close}");
+            }
+
+        }
+
+    }
+}
+
+
+```
+
+
+## Building a Recommendation AI
+- ![alt text](image-115.png)
+- Used in netflix to provide recommendations
+- 2 main types of recommendation systems:
+- **Content Based Filtering**: This approach recommends items similar to those you have liked or interacted with in the past. It analyzes the features or attributes of items like movie genres, actors and plot keywords, and compares them to your Preferences.For example, if you've watched and enjoyed action movies starring Tom cruise, the system might recommend other action movies featuring similar actors or genres.
+- **Collaborative Filtering**: This approach recommends items based on the preferences and behaviors of similar users. It looks at the past interactions and ratings of users who have similar tastes to yours, and suggests items that they have liked but you haven't seen yet. For instance, if other users with similar movie preferences to yours have enjoyed a particular film, the system might recommend it to you as well. 
+- ![alt text](image-116.png)
+- ![alt text](image-117.png)
+- Cold Start Problem: Recommendation systems may struggle to provide accurate recommendations for new users or items with limited historical data. This is known as the cold start problem, and can hinder the system's ability to provide personalized recommendations until sufficient data is available.
+- Popularity Bias: Recommendation systems tend to recommend popular or mainstream items more frequently, leading to a bias toward well-known content. This can result in a lack of diversity in recommendations, and overlooks niche or less popular items that may be relevant to certain users.
+
+### Building a movie recommendation system
+- ![alt text](image-118.png)
+- ![alt text](image-119.png)
+- **Matrix Factorization** is a powerful technique used in recommendation system to predict user preferences for items 
+- Image we have a table where rows represent users and columns represent movies. 
+- ![alt text](image-120.png)
+- It breaks this large table into 2 smaller matrices. One representing users and other representing movies. 
+- These smaller matrices capture the underlying features or latent factors that describe the preferences and movie characteristics. For example, in a movie recommendation AI,these latent factors might include genres, actors, or other movie attributes, and user preferences for these factors.
+- Each factor and movie is represented as a vector in a lower dimensional space defined by these latent factors.
+- ![alt text](image-121.png)
+- The goal of matrix factorization is to find these two matrices, P and Q, such that when you multiply
+them together, you approximate the original user movie ratings matrix.
+- This approximation allows the recommendation system to fill in the missing ratings.
+- By predicting how much a user would like a movie they haven't rated yet. For example, if user A likes action and comedy but dislikes romance and movie X is a comedy with some action. Matrix factorization helps the system predict that user A will likely rate movie X higher, even if
+they haven't seen it yet.
+- Conversely, if movie Y is a romance with no action or comedy, the system might predict a lower rating from user A.
+- ![alt text](image-122.png)
+- By capturing these complex patterns, matrix factorization enables recommendation systems to make accurate and personalized suggestions, significantly improving user experience by helping them discover movies that align with their unique tastes.
+- To code this we will do the following steps:
+- Load the data from the text file which contains userIds, movieId and their ratings. 
+- We will first preprocess the data for training. 
+- We will convert userId and movieId to key values and ratings were changed from double to integers to make them easier to work with. 
+- Then we will save this preprocessed data to a csv file. 
+- Then based on this preprocessed csv file, we will start training our model . 
+- We Will divide our data into training set and test set. 
+- We will use the MatrixFactorizationTrainer to understand the underlying patterns in the rating data an make predictions for unseen users. 
+- We will evaluate the metrics for the model and make a single prediction using the trained model. 
+- Whole code is as follows: 
+```c#
+ using Microsoft.ML;
+using Microsoft.ML.Data;
+using Microsoft.ML.Trainers;
+using System.Net.WebSockets;
+
+namespace Recommendation
+{
+    public class MovieRating
+    {
+        [LoadColumn(0)]
+        public float userId;
+
+        [LoadColumn(1)]
+        public float movieId;
+
+        [LoadColumn(2)]
+        public float Label;
+    }
+
+    public class MovieRatingPrediction
+    {
+        public float Label;
+        public float Score;
+    }
+
+    public class Program
+    {
+
+        /*
+        This method takes an MLContext object and an IDataView object as input. It performs data preprocessing by mapping the user ID and movie ID columns to key values. 
+        This is done to make it easier for the recommendation model to process the data.  
+         */
+        public static IDataView PreProcessData(MLContext mLContext, IDataView dataView)
+        {
+            /*
+              The user ID has remained the same, but the movie ID has been changed so that each movie ID is one after
+              the other, sequentially, without any gaps.
+              Furthermore, the ratings were converted from doubles into integers to make them easier to work with.
+             */
+            return mLContext.Transforms.Conversion.MapValueToKey(outputColumnName: "userId", inputColumnName: "userId")
+                    .Append(mLContext.Transforms.Conversion.MapValueToKey(outputColumnName: "movieId", inputColumnName: "movieId"))
+                    .Fit(dataView).Transform(dataView);
+        }
+
+        /*
+          This method takes an MLContext object, an IDataView object, and a file path as input. 
+          It saves the preprocessed data to a file in CSV format.
+         
+         */
+        public static void SaveData(MLContext mLContext, IDataView dataView, string dataPath)
+        {
+            using(var fileStream = new FileStream(dataPath, FileMode.Create, FileAccess.Write, FileShare.Write))
+            {
+                mLContext.Data.SaveAsText(dataView, fileStream, separatorChar:',',headerRow:true, schema:false);
+            }
+        }
+
+        /*
+          This method takes an MLContext object as input and returns a tuple of IDataView objects. 
+          It loads the preprocessed data from a CSV file and splits it into training and test data.
+         */
+        static (IDataView training, IDataView test) LoadData(MLContext mLContext)
+        {
+            var dataPath = "preprocessed_ratings.csv";
+            IDataView fullData = mLContext.Data.LoadFromTextFile<MovieRating>(dataPath, hasHeader: true, separatorChar: ',');
+            var trainTestData = mLContext.Data.TrainTestSplit(fullData, testFraction: 0.2);
+            IDataView trainData = trainTestData.TrainSet;
+            IDataView testData = trainTestData.TestSet;
+            return (trainData, testData);
+        }
+
+        /*
+         This method takes an IDataView object as input and prints a preview of the data. 
+         It shows the key-value pairs for each row in the data.
+         */
+        public static void PrintDataPreview(IDataView dataView)
+        {
+            var preview = dataView.Preview();
+            foreach (var row in preview.RowView)
+            {
+                foreach (var column in row.Values)
+                {
+                    Console.Write($"{column.Key}:{column.Value}\t");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        /*
+          This method takes an MLContext object and an IDataView object as input. 
+          It trains a recommendation model using the MatrixFactorizationTrainer and returns the trained model.
+         */
+        static ITransformer TrainModel(MLContext mlContext, IDataView trainingDataView)
+        {
+            IEstimator<ITransformer> estimator = mlContext.Transforms.Conversion
+                                                .MapValueToKey(outputColumnName: "outputUserId", inputColumnName: "userId")
+                                                .Append(mlContext.Transforms.Conversion.MapValueToKey(outputColumnName: "outputMovieId", inputColumnName: "movieId"));
+
+            /*
+             An instance of the MatrixFactorizationTrainer.Options class is created. 
+            This class contains various configuration options for the Matrix Factorization trainer.
+             */
+
+            var options = new MatrixFactorizationTrainer.Options
+            {
+                MatrixColumnIndexColumnName = "outputUserId",
+                MatrixRowIndexColumnName = "outputMovieId",
+                LabelColumnName = "Label",
+                NumberOfIterations = 20,
+                ApproximationRank = 100
+            };
+
+            /*
+             The estimator object is responsible for transforming the input data by mapping the user and movie IDs to key values.
+             The estimator object will map the "userId" and "movieId" columns to key values. For example, it might map "userId" 1 to key value 0, "userId" 2 to key value 1, and so on. Similarly, it will map "movieId" 101 to key value 0, "movieId" 102 to key value 1, and so on.
+             The trainerEstimator will then use the Matrix Factorization algorithm to train the model on the transformed data. 
+             The model will learn the underlying patterns in the ratings data and make predictions for unseen user-movie combinations.
+             */
+            var trainerEstimator = estimator.Append(mlContext.Recommendation().Trainers.MatrixFactorization(options));
+            ITransformer model = trainerEstimator.Fit(trainingDataView);
+            Console.WriteLine("Model successfully trained");
+            return model;
+        }
+
+        /*
+          This method takes an MLContext object, an IDataView object, and a trained model as input. 
+          It evaluates the model's performance on the test dataset by calculating the RSquared and Root Mean Squared Error metrics.
+         */
+        static void EvaluateModel(MLContext mLContext, IDataView testDataView, ITransformer model)
+        {
+            var prediction = model.Transform(testDataView);
+            var metrics = mLContext.Regression.Evaluate(prediction, labelColumnName: "Label", scoreColumnName: "Score");
+            Console.WriteLine($"RSquared: {metrics.RSquared}");
+            Console.WriteLine($"Root Mean Squared Error: {metrics.RootMeanSquaredError}");
+        }
+
+        /*
+          This method takes an MLContext object and a trained model as input. 
+          It uses the model to make a single prediction for a user and a movie and prints the predicted rating.
+         */
+
+        static void UseModelForSinglePrediction(MLContext mLContext, ITransformer model)
+        {
+            var predictionEngine = mLContext.Model.CreatePredictionEngine<MovieRating, MovieRatingPrediction>(model);
+            var testInput = new MovieRating { userId = 14, movieId = 433 };
+            var movieRatingPrediction = predictionEngine.Predict(testInput);
+            Console.WriteLine("Predicted rating for movie " + testInput.movieId + " is : " + Math.Round(movieRatingPrediction.Score, 1));
+            string recommendation = Math.Round(movieRatingPrediction.Score, 1) > 3.5 ? 
+                "Movie " + testInput.movieId + " is recommended for user " + testInput.userId :
+                "Movie " + testInput.movieId + " is not recommended for user " + testInput.userId;
+            Console.WriteLine(recommendation);
+        }
+
+
+        /*
+        This method is the entry point of the program. 
+        It initializes the MLContext object, loads the original data, preprocesses and saves the data, 
+        loads the training and test datasets, prints a preview of the training data, 
+        trains the model, evaluates the model, and makes a single prediction using the model.
+         */
+        public static void Main(string[] args)
+        {
+            var mLContext = new MLContext(seed: 0);
+
+            var fullData = mLContext.Data.LoadFromTextFile<MovieRating>("ratings.csv", hasHeader: true, separatorChar: ',');
+
+            var preprocessData = PreProcessData(mLContext, fullData);
+
+            SaveData(mLContext, preprocessData, "preprocessed_ratings.csv");
+
+            (IDataView trainingDataView, IDataView testDataView) data = LoadData(mLContext);
+
+            PrintDataPreview(data.trainingDataView);
+            ITransformer model = TrainModel(mLContext, data.trainingDataView);
+
+            EvaluateModel(mLContext,data.testDataView, model);
+
+            UseModelForSinglePrediction(mLContext, model);
+        }
+    }
+}
+
+```
+
+## Develop a Sentiment Analysis AI
+- Also known as opinion mining is a subfield of natural language processing that involves determining the emotional tone behind a series of words. 
+- ![alt text](image-123.png)
+- Multiple types of sentiment analysis: 
+- Fine Grained Sentiment Analysis 
+- ![alt text](image-124.png)
+- Aspect based sentiment analysis 
+- ![alt text](image-125.png)
+- Emotion detection (useful in customer service )
+- ![alt text](image-126.png)
+- Intent Analysis(useful for chatbots)
+- ![alt text](image-127.png)
+- ![alt text](image-128.png)
+- ![alt text](image-129.png)
+- ![alt text](image-130.png)
+- We will develop an AI that will determine whether a movie review is positive or negative. 
+- ![alt text](image-131.png)
+- ![alt text](image-132.png)
+- We first preprocess the data to remove single quotes and convert positive to boolean true and negative to boolean false 
+- We then load the data into a dataview
+- Then we create a pipeline where we convert the "reviews" column into its numerical representation 
+- We then use Logistic Regression trainer to find out the relationship between this reviews column and its label(sentiment): positive or negative(true or false respectively)
+- Finally we train the model and evaluate its various metrics as to how accurate it is while making predictions
+```c#
+ using Microsoft.ML;
+using Microsoft.ML.Data;
+
+public class SentimentData
+{
+    [LoadColumn(0)]
+    public string review { get; set; }
+
+    [LoadColumn(1)]
+    [ColumnName("Label")]
+    public bool sentiment { get; set; }
+}
+
+public class Program
+{
+    static void Main(string[] args)
+    {
+        var mlContext = new MLContext();
+        string dataPath = "movieReviews.csv";
+        string text = File.ReadAllText(dataPath);
+
+        //Remove single quotes from the csv file
+        //Replace the words positive and negative with true and false
+        using (StreamReader reader = new StreamReader(dataPath))
+        {
+            text = text.Replace("\'", "");
+            text = text.Replace("positive", "true");
+            text = text.Replace("negative", "false");
+        }
+
+        File.WriteAllText(dataPath, text);
+
+        IDataView dataView = mlContext.Data.LoadFromTextFile<SentimentData>(dataPath, hasHeader: true,allowQuoting:true, separatorChar: ',');
+
+        Console.WriteLine("Data loaded successfully");
+        Console.WriteLine();
+        var preview = dataView.Preview(maxRows: 5);
+        foreach (var row in preview.RowView)
+        {
+            foreach (var column in row.Values)
+            {
+                Console.WriteLine($"{column.Key}: {column.Value}");
+            }
+        }
+
+
+
+        var trainTestSplit  = mlContext.Data.TrainTestSplit(dataView, testFraction: 0.2);
+
+        var trainData = trainTestSplit.TrainSet;
+
+        /*
+         We create a pipeline that is responsible for transforming the text data in the "review" column into numerical features. 
+          It uses the FeaturizeText method from the Text transforms in the MLContext to convert the text into a numerical representation that can be used by the machine learning algorithm. 
+          The transformed features are stored in a new column called "Features".
+         After this we append a binary classification trainer to the previous transformation. 
+          It uses the SdcaLogisticRegression trainer from the BinaryClassification trainers in the MLContext. 
+          The trainer is responsible for training a logistic regression model to predict the sentiment label based on the transformed features. 
+          The "Label" column is used as the target label, and the "Features" column is used as the input features for training the model.
+         */
+        var pipeline = mlContext.Transforms.Text.FeaturizeText("Features", "review")
+            .Append(mlContext.BinaryClassification.Trainers.SdcaLogisticRegression("Label", "Features"));
+
+        //Fit the pipeline to the training data
+        var model = pipeline.Fit(trainData);
+
+        var testData = trainTestSplit.TestSet;
+
+        //Make predictions on the test data
+        var predictions = model.Transform(testData);
+
+        //Evaluate the model
+        var metrics = mlContext.BinaryClassification.Evaluate(predictions, "Label");
+
+        //How often the AI gets the sentiment(positive or negative) correct
+        Console.WriteLine($"Accuracy: {metrics.Accuracy:P2}");
+        //AUC stands for Area under ROC Curve. It means how well the AI can tell the difference between
+        //positive and negative sentiments
+        Console.WriteLine($"AUC: {metrics.AreaUnderRocCurve:P2}");
+        //F1 Score is the balance between how many positive reviews the AI correctly finds(recall) and how many of the reviews it says are positive that actually are positive(precision)
+        Console.WriteLine($"F1 Score: {metrics.F1Score:P2}");
+        //Log loss also known as cross-entropy loss measures how confident the AI is in its predictions and
+        //how wrong it is when it makes mistakes
+        Console.WriteLine($"Log Loss: {metrics.LogLoss:F2}");
+    }
+}
+
+```
+
+## Develop an Anomaly Detection AI 
+- It is type of AI that identifies unusual patterns or behaviors in data that donot conform to expected norms 
+- These unusual patterns are called anomalies, and they can indicate critical events such as fraud,
+system failures, or unusual usage patterns.
+- Main Concepts: 
+- Normal Data: This is the usual expected behavior in your data set. For example, normal transactions in a bank. Regular traffic on a network or typical user activity on a website.
+- Anomaly: An anomaly is something that deviates from the norm. In a bank, an anomaly might be a transaction that's much larger than usual on a network. It could be an unusual spike in traffic on a website. It could be an unusual login pattern.
+- Anomaly Detection System: This AI system is designed to monitor data and flag anything that looks suspicious or different from normal behavior. It can work in real time or analyze historical data.
+- ![alt text](image-133.png)
+- Anomaly detection can monitor vital signs and alert health care providers to any unusual changes in
+a patient's condition.
+- It can detect defects in products by identifying deviations from the standard manufacturing process.
+- ![alt text](image-134.png)
+- ![alt text](image-135.png)
+- ![alt text](image-136.png)
+- ![alt text](image-137.png)
+- Anomalies in Network Traffic can be considered as following: 
+- ![alt text](image-138.png)
+- ![alt text](image-139.png)
+- We will first load data from network_data.csv file to a dataview. 
+- We will then create a pipeline that converts the SourceIp, DestinationIp to numeric values 
+- Then it concatenates features with packet size and normalizes it to a value between 0 and 1 
+- Then we apply a K-Means clustering algorithm which is an unsupervised learning algorithm where it categorizes the data based on the input features. 
+- Use the K-Means clustering algorithm to train your model. K-Means will partition your data into K clusters based on the mean distance between data points.
+- After training, you can use the model to predict the cluster for each data point.
+- Calculate the distance of each data point from its cluster centroid. Data points that are far from their centroids can be considered anomalies.
+- Finally we make predictions and compare the actual label to the predicted labels and check whether it was able to detect anomalies in the data. 
+```c#
+ using Microsoft.ML;
+using Microsoft.ML.Data;
+
+namespace NetworkTrafficAnomalyDetection
+{
+
+    public class NetworkTrafficData
+    {
+        [LoadColumn(0)]
+        public string Timestamp { get; set; }
+
+        [LoadColumn(1)]
+        public string SourceIP { get; set; }
+
+        [LoadColumn(2)]
+        public string DestinationIP { get; set; }
+
+        [LoadColumn(3)]
+        public string Protocol { get; set; }
+
+        [LoadColumn(4)]
+        public float PacketSize { get; set; }
+
+        [LoadColumn(5)]
+        public string Label { get; set; }
+
+    }
+
+    public class NetworkTrafficPrediction
+    {
+        [ColumnName("PredictedLabel")]
+        public uint PredictedClusterId { get; set; }
+
+        public float[] Score { get; set; }
+    }
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var mLContext = new MLContext();
+            var dataPath = "network_data.csv";
+            var dataView = mLContext.Data.LoadFromTextFile<NetworkTrafficData>(dataPath, hasHeader: true, separatorChar: ',');
+            //var preview = dataView.Preview();
+            //foreach (var row in preview.RowView)
+            //{
+            //    Console.WriteLine($"{row.Values[0]} | {row.Values[1]}");
+            //}
+
+
+            /*
+             In the first step of the pipeline convert the "SourceIP" column in the data to a numeric key. 
+              This is useful when working with categorical data in machine learning models.
+             Convert the "DestinationIP" column in the data to a numeric key, similar to the previous step.
+             Concatenate the "Features" column with the "PacketSize" column. 
+             The "Features" column is a combination of multiple input features that will be used for training the model.
+             Normalize the values in the "Features" column. 
+             Normalization is a common preprocessing step in machine learning that scales the values to a specific range, often between 0 and 1. 
+             This ensures that all features have a similar impact on the model.
+             Apply the K-means clustering algorithm to the "Features" column. 
+             K-means is an unsupervised machine learning algorithm that groups similar data points together. In this case, it will cluster the data into 3 groups based on the values in the "Features" column.
+             */
+            var pipeline = mLContext.Transforms.Conversion.MapValueToKey("SourceIP")
+                .Append(mLContext.Transforms.Conversion.MapValueToKey("DestinationIP"))
+                .Append(mLContext.Transforms.Concatenate("Features","PacketSize"))
+                .Append(mLContext.Transforms.NormalizeMinMax("Features"))
+                .Append(mLContext.Clustering.Trainers.KMeans("Features", numberOfClusters: 3));
+
+            // Train the model
+            var model = pipeline.Fit(dataView);
+
+            // Make predictions
+            var predictions = model.Transform(dataView);
+
+            var predictedData = mLContext.Data.CreateEnumerable<NetworkTrafficPrediction>(predictions, reuseRowObject: false);
+            var actualData = mLContext.Data.CreateEnumerable<NetworkTrafficData>(dataView, reuseRowObject: false);
+
+            using (var predictedEnumerator = predictedData.GetEnumerator())
+            using (var actualEnumerator = actualData.GetEnumerator())
+            {
+                while (predictedEnumerator.MoveNext() && actualEnumerator.MoveNext())
+                {
+                    var predicted = predictedEnumerator.Current;
+                    var actual = actualEnumerator.Current;
+
+                    var predictedLabel = predicted.PredictedClusterId == 1? "Normal": "Anomalous";
+                    Console.WriteLine($"Actual Label: {actual.Label}, Predicted Label: {predictedLabel}, Score:{string.Join(", ",predicted.Score)}");
+                }
+            }
+
+            Console.WriteLine("Anomaly Detection Complete.");
+        }
+    }
+}
+
+```

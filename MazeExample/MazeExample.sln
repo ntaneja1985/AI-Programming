@@ -13,6 +13,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MachineLearningModelSelecti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SentimentAnalysis", "..\SentimentAnalysis\SentimentAnalysis.csproj", "{D6108235-9797-4B3C-9F21-006C1B4A7586}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageClassification", "..\ImageClassification\ImageClassification.csproj", "{955767CA-9261-4C8A-9FE0-D41182C1973D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Regression", "..\Regression\Regression.csproj", "{D6CA7002-1098-4E5B-A192-4BF67B7C5A88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForecastingAI", "..\ForecastingAI\ForecastingAI.csproj", "{68C00D77-9778-40F8-A96C-AC08DAC36764}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recommendation", "..\Recommendation\Recommendation.csproj", "{8CA8356F-035B-4767-A63A-268688E62562}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SentimentAnalysisAI", "..\SentimentAnalysisAI\SentimentAnalysisAI.csproj", "{10C7E3AA-6B4C-45BF-887E-5A8BB769AFBB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnomalyDetectionAI", "..\AnomalyDetectionAI\AnomalyDetectionAI.csproj", "{D7B75ED9-34E2-47E6-BC1B-A7A326802241}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +51,30 @@ Global
 		{D6108235-9797-4B3C-9F21-006C1B4A7586}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6108235-9797-4B3C-9F21-006C1B4A7586}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6108235-9797-4B3C-9F21-006C1B4A7586}.Release|Any CPU.Build.0 = Release|Any CPU
+		{955767CA-9261-4C8A-9FE0-D41182C1973D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{955767CA-9261-4C8A-9FE0-D41182C1973D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{955767CA-9261-4C8A-9FE0-D41182C1973D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{955767CA-9261-4C8A-9FE0-D41182C1973D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6CA7002-1098-4E5B-A192-4BF67B7C5A88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6CA7002-1098-4E5B-A192-4BF67B7C5A88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6CA7002-1098-4E5B-A192-4BF67B7C5A88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6CA7002-1098-4E5B-A192-4BF67B7C5A88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68C00D77-9778-40F8-A96C-AC08DAC36764}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68C00D77-9778-40F8-A96C-AC08DAC36764}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68C00D77-9778-40F8-A96C-AC08DAC36764}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68C00D77-9778-40F8-A96C-AC08DAC36764}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CA8356F-035B-4767-A63A-268688E62562}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CA8356F-035B-4767-A63A-268688E62562}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CA8356F-035B-4767-A63A-268688E62562}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CA8356F-035B-4767-A63A-268688E62562}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10C7E3AA-6B4C-45BF-887E-5A8BB769AFBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10C7E3AA-6B4C-45BF-887E-5A8BB769AFBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10C7E3AA-6B4C-45BF-887E-5A8BB769AFBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10C7E3AA-6B4C-45BF-887E-5A8BB769AFBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7B75ED9-34E2-47E6-BC1B-A7A326802241}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7B75ED9-34E2-47E6-BC1B-A7A326802241}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7B75ED9-34E2-47E6-BC1B-A7A326802241}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7B75ED9-34E2-47E6-BC1B-A7A326802241}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
