@@ -2783,3 +2783,1281 @@ namespace NetworkTrafficAnomalyDetection
 }
 
 ```
+
+## Building a Text Generation AI
+- It is a technique that uses AI and ML algorithms to create human-like text. 
+- The goal is to produce coherent, contextually relevant and grammatically correct text that mimics natural human communication and is engaging for the intended audience. 
+- At its core, text generation involves training an AI model on a large corpus of text data.
+- This data could be anything from books and articles to scripts and conversations.
+- The model learns the structure, context, and nuances of this language from the data.
+- For instance, if we train a model on a data set of English literature, it will learn the grammar,vocabulary, and stylistic elements unique to English literature.
+- While we prompt the model with a few words or a sentence.
+- It can continue the text in a coherent and contextually appropriate manner.
+- ![alt text](image-140.png)
+- ![alt text](image-141.png)
+- ![alt text](image-142.png)
+- Transformers like the well known GPT, which stands for Generative pre-trained transformer, have revolutionized text generation.
+- They use attention mechanisms to understand the context of each word in relation to others in a sentence, allowing for more coherent and contextually accurate text generation.
+- GPT 3.0, for instance, is one of the most advanced text generation models available.
+- It can generate text that is almost indistinguishable from human writing, opening up even more possibilities for AI driven text applications.
+- To ensure grammatical correctness and coherence, Text generation AI often employs techniques such as parts of speech, POS(Parts of Speech) tagging, and language modeling.
+- POS tagging helps identify the grammatical role of each word in a sentence, while language models learn to predict the next word in a sentence based on previous words while generating text.
+- ![alt text](image-143.png)
+- ![alt text](image-144.png)
+
+### Coding and Building a Text-Generation AI
+- ![alt text](image-145.png)
+- Text generation is a subfield of natural language processing, or NLP, that involves creating coherent and contextually relevant text based on a given input or prompt.
+- ![alt text](image-146.png)
+- ![alt text](image-147.png)
+- Using n-grams allows us to capture the context of words based on their surrounding words.
+- This is crucial in generating coherent text, because it helps the model understand which words commonly appear together and in what order.
+- ![alt text](image-148.png)
+- The choice of n the size of the n-gram impacts the context captured in the model.
+- Smaller values of n like unigrams provide less context, while larger values like trigrams can capture more complex relationships, but may require more data to train effectively.
+- N-grams offer a simple yet effective way to model language by leveraging the statistical properties
+of word sequences.
+N-grams help us create models that generate text with a level of coherence that basic random sampling
+cannot achieve. The model learns from the frequency of word combinations, allowing it to produce text that feels natural and contextually relevant.
+In our project, we will implement a bigram model, which means we will look at pairs of words to predict the next word in a sequence.
+![alt text](image-149.png)
+- We basically build a dictionary(ngramModel), where the key is the current word and its value is another dictionary of the next words it can have based on its training data set. 
+- We ask the user to provide a starting sequence of words. 
+- For example the user can specify: "To be" 
+- We then use the ngram model to lookup the key of "be" and then in its value(of dictionary), we find the nextWord. This nextWord has to be one the highest frequency. 
+- Lets say that word is "or" 
+- So now our result becomes "To be or". 
+- Now we will look up the ngramModel with the key of "or" keyword and find the next word and so on till reach the max length of the sentence that is required 
+- Here is the full code: 
+```c#
+ using Microsoft.ML;
+using Microsoft.ML.Data;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
+public class TextData
+{
+    public string Text { get; set; }
+}
+
+public class NgramPrediction
+{
+    public string Input { get; set; }
+    public string Label { get; set; }
+}
+
+public class Program
+{
+    // This dictionary stores the n-gram model. The key is an n-gram, and the value is a dictionary that stores the frequency of each next word for the given n-gram key.
+    // The ngramModel dictionary in the CreateNgramModel function serves as the core data structure for storing the n-gram model.
+    // Its purpose is to keep track of the frequency of each possible next word given a specific sequence of n-1 words (the n-gram key).
+    static Dictionary<string,Dictionary<string,int>> ngramModel = new Dictionary<string, Dictionary<string, int>>();
+
+    static IEnumerable<TextData> LoadData(MLContext mlContext, string inputPath)
+    {
+        string text = File.ReadAllText(inputPath);
+        return new List<TextData> { new TextData { Text = text } };
+    }
+
+    /*
+     This function processes the text data, extracts n-grams, and builds a dictionary-based model that stores the frequency of each next word for a given n-gram key. 
+     This model can be used to generate text or make predictions based on the provided data.
+     */
+    static void CreateNgramModel(IEnumerable<TextData> data, int n)
+    {
+        foreach (var text in data)
+        {
+            // Remove special characters and split the text into words
+            // It removes any non-alphanumeric characters from the text using a regular expression.
+            // It converts the text to lowercase.
+            // It splits the text into an array of words using spaces, newlines, and carriage returns as delimiters.
+            
+            var words = Regex.Replace(text.Text, @"[^\w\s]", "").ToLower().Split(new char[] { ' ', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+            // Iterate over the array of words, excluding the last n words.
+            for (int i = 0; i < words.Length - n; i++)
+            {
+                // Extract the n-gram key and the next word.
+                var ngramKey = string.Join(" ", words.Skip(i).Take(n - 1));
+
+                // Extract the next word.
+                var nextWord = words[i + n - 1];
+
+                // If ngram model doesnot contain the word, add it to the dictionary as the key
+                if (!ngramModel.ContainsKey(ngramKey))
+                {
+                    ngramModel[ngramKey] = new Dictionary<string, int>();
+
+                }
+
+                //if the ngram model contains an entry with the key of the current word and its dictionary of next words contains the next word, increment it
+                //we are doing all this to calculate the frequency of the next words and this will give us the most likely next word in the sequence.
+                if (!ngramModel[ngramKey].ContainsKey(nextWord))
+                {
+                    ngramModel[ngramKey][nextWord] = 0;
+                }
+                ngramModel[ngramKey][nextWord]++;
+            }
+        }
+    }
+
+    // Randomly select a word from the dictionary based on the frequency of each word.
+    // This method can be used in the context of text generation or prediction based on n-gram models.
+    // By randomly selecting the next word from the dictionary of possible next words, it adds an element of randomness to the generated or predicted text.
+    static string GetRandomWord(Dictionary<string, int> nextWords)
+    {
+        var total = nextWords.Values.Sum();
+        var randomValue = new Random().Next(0, total);
+        foreach (var word in nextWords)
+        {
+            randomValue -= word.Value;
+            if (randomValue < 0)
+            {
+                return word.Key;
+            }
+        }
+
+        return string.Empty;
+    }
+
+    // Generate text based on the provided initial text and length.
+    static string GenerateText(string seed, int length)
+    {
+        var result = seed;
+        var words = seed.Split(' ');
+        for (int i = 0; i < length; i++) 
+        { 
+            var ngramKey = string.Join(" ", words.Skip(Math.Max(0,words.Length - 1)));
+            // Check if the n-gram key is present in the model
+            if (ngramModel.ContainsKey(ngramKey))
+            {
+                // Get the possible next words for the n-gram key
+                var nextWords = ngramModel[ngramKey];
+                // Get the next word based on the frequency of each word
+                var nextWord = GetRandomWord(nextWords);
+                // Add the next word to the result
+                result += " " + nextWord;
+                // Add the next word to the array of words
+                Array.Resize(ref words, words.Length + 1);
+                words[words.Length - 1] = nextWord;
+            }
+            else
+            {
+                break;
+            }  
+        }
+        return result;
+    }
+        public static void Main(string[] args)
+    {
+        var mlContext = new MLContext();
+        var data = LoadData(mlContext, "input.txt");
+
+        // Create a 2-gram model
+        /*
+         Suppose n is 3, and the text is "the quick brown fox jumps over the lazy dog".
+         The function will generate 3-grams like "the quick brown", "quick brown fox", "brown fox jumps", etc.
+         For the 3-gram "the quick brown", "the quick" is the key, and "brown" is the next word.
+         The ngramModel will be updated to reflect that "brown" follows "the quick" once.
+         The ngramModel can be used to predict the next word in a sequence by looking up the n-gram key and selecting the most frequent next word.
+         It can also be used to generate text by repeatedly predicting the next word based on the current sequence of words.
+         The ngramModel dictionary is essential for storing the relationships between n-grams and their subsequent words, allowing the function to build a predictive model based on the input text data.
+         */
+        CreateNgramModel(data, n:2);
+        Console.WriteLine("Enter a starting sentence:");
+        string seed = Console.ReadLine();
+        Console.WriteLine("Enter the length of the generated text:");
+        int length = int.Parse(Console.ReadLine());
+        string generatedText = GenerateText(seed, length);
+        Console.WriteLine("\nGenerated Shakespearean text:");
+        Console.WriteLine(generatedText);
+
+    }
+}
+
+```
+
+## Develop a Time-series AI(Predictive AI)
+- Time Series data is a sequence of observations collected at regular intervals over time.
+- It differs from cross-sectional data in that each data point is indexed by time, whether it is hourly, daily, monthly or yearly. 
+- This chronological order allows us to uncover patterns and trends that can provide valuable insights
+into the behavior of data
+![alt text](image-150.png)
+- For example, in finance, analysts use time series data to forecast stock prices or predict market
+trends.
+- In healthcare, it helps in monitoring patient health over time.
+- ![alt text](image-151.png)
+- ![alt text](image-152.png)
+- ![alt text](image-153.png)
+- ![alt text](image-154.png)
+- ![alt text](image-155.png)
+
+## Building a TimeSeries AI
+- ![alt text](image-156.png)
+- We will first load the csv file containing columns for the datetime and the traffic. 
+- We will map this to a TrafficData class 
+- As a pre-processing step, we will replace the missing values so as to generate complete information
+- We will then split the csv file into training data and test data.
+- We will then create a forecasting pipeline using the Singular Spectrum Analysis(SSA) algorithm.
+- We will then create a timeseries engine and then evaluate and print the forecasts.
+- ![alt text](image-157.png)
+- Here is the complete code: 
+```c#
+ using Microsoft.ML;
+using Microsoft.ML.Data;
+using Microsoft.ML.Transforms;
+using Microsoft.ML.Transforms.TimeSeries;
+using System.Globalization;
+
+
+public class TrafficData
+{
+    [LoadColumn(0)]
+    public DateTime Date;
+
+    [LoadColumn(1)]
+    public float Traffic;
+}
+
+public class Prediction
+{
+    public float[] PredictedTraffic { get; set; }
+    public float[] LowerBoundTraffic { get; set; }
+    public float[] UpperBoundTraffic { get; set; }
+}
+public class Program
+{
+
+    // Forecast the traffic values for the next 'horizon' time steps using the forecasting model.
+    static void Forecast(MLContext mlContext, IDataView testData,int horizon, TimeSeriesPredictionEngine<TrafficData,Prediction> forecaster)
+    {
+        var forecast = forecaster.Predict(horizon: horizon);
+        var testTrafficData = mlContext.Data.CreateEnumerable<TrafficData>(testData, reuseRowObject: false).ToList();
+        for (int i = 0; i < horizon && i< forecast.PredictedTraffic.Length; i++)
+        {
+           string date = testTrafficData[i].Date.ToShortDateString();
+           float actualTraffic = i < testTrafficData.Count ?  testTrafficData[i].Traffic : 0;
+            float lowerEstimate = Math.Max(0,forecast.LowerBoundTraffic[i]);
+            float estimate = forecast.PredictedTraffic[i];
+            float upperEstimate = forecast.UpperBoundTraffic[i];
+            Console.WriteLine($"Date: {date}, Actual Traffic: {actualTraffic}, Forecast Traffic: {estimate}, Lower Estimate: {lowerEstimate}, Upper Estimate: {upperEstimate}");
+        }
+    }
+
+    // Evaluate the forecasting model using the Mean Absolute Error (MAE) and Root Mean Squared Error (RMSE) metrics.
+    static void EvaluateMetrics(IDataView testData, IDataView predictions, MLContext mLContext)
+    {
+        IEnumerable<float> actual = mLContext.Data.CreateEnumerable<TrafficData>(testData,true)
+            .Select(observed => observed.Traffic);
+        IEnumerable<float> forecast = mLContext.Data.CreateEnumerable<Prediction>(predictions, true)
+            .Select(prediction => prediction.PredictedTraffic[0]);
+        
+        var metrics = actual.Zip(forecast, (actualValue, forecastValue) => actualValue - forecastValue);
+        var MAE = metrics.Average(Math.Abs);
+        var RMSE = Math.Sqrt(metrics.Average(error =>Math.Pow(error,2)));
+        Console.WriteLine("Evaluate Metrics");
+        Console.WriteLine($"Mean Absolute Error: {MAE}");
+        Console.WriteLine($"Root Mean Squared Error: {RMSE}");
+    }
+    public static void Main(string[] args)
+    {
+        string dataPath = "data_timeseries.csv";
+        var mlContext = new MLContext();
+        // Load data
+        var dataView = mlContext.Data.LoadFromTextFile<TrafficData>(dataPath, hasHeader: true, separatorChar: ',');
+
+        // It replaces missing values in the "Traffic" column of the data with the mean value of the available data. It is a preprocessing step that ensures the data is complete and ready for further analysis or modeling.
+        var filledDataView = mlContext.Transforms.ReplaceMissingValues(
+            outputColumnName: "Traffic",
+            replacementMode: MissingValueReplacingEstimator.ReplacementMode.Mean)
+            .Fit(dataView)
+            .Transform(dataView);
+
+        var trainTestData = mlContext.Data.TrainTestSplit(filledDataView, testFraction: 0.2);
+        var trainData = trainTestData.TrainSet;
+        var testData = trainTestData.TestSet;
+
+        //Create a forecasting pipeline using the Singular Spectrum Analysis (SSA) algorithm in the ML.NET library.
+        //The SSA algorithm is used for time series forecasting, which involves predicting future values based on historical data.
+        var pipeline = mlContext.Forecasting.ForecastBySsa(
+            //Specifies the name of the column that will store the predicted traffic values.
+            outputColumnName: "PredictedTraffic",
+            //Specifies the name of the column that contains the input traffic values used for forecasting.
+            inputColumnName: "Traffic",
+            //Specifies the size of the sliding window used in the SSA algorithm.
+            //This window size determines the number of historical data points used to make predictions.
+            windowSize: 14,
+            //Specifies the length of the time series.
+            //This value represents the total number of data points in the time series.
+            seriesLength: 100,
+            //Specifies the size of the training set, which is the percentage of the time series used for training the forecasting model.In this case, 80 % of the data will be used for training.
+            trainSize: 80,
+            //Specifies the number of future time steps to forecast.In this case, the model will predict the traffic values for the next 7 time steps.
+            horizon: 7,
+            //Specifies the confidence level for the prediction intervals.
+            //The confidence level of 0.95 means that the predicted traffic values will fall within the 95% confidence interval.
+            confidenceLevel: 0.95f,
+            //Specifies the name of the column that will store the lower bound of the confidence interval.
+            confidenceLowerBoundColumn: "LowerBoundTraffic",
+            //Specifies the name of the column that will store the upper bound of the confidence interval.
+            confidenceUpperBoundColumn: "UpperBoundTraffic");
+
+        var model = pipeline.Fit(trainData);
+        var predictions = model.Transform(testData);
+        //EvaluateMetrics(testData, predictions, mlContext);
+
+        //Create a time series engine using the forecasting model.
+        var forecastingEngine = model.CreateTimeSeriesEngine<TrafficData, Prediction>(mlContext);
+        Forecast(mlContext, testData, 7, forecastingEngine);
+    }
+}
+
+
+```
+
+### Single Spectrum Analysis
+-  Let's break down Single Spectrum Analysis (SSA) in simple terms
+-  Imagine you have a song, and you want to understand its structure. Here's how SSA would help:
+-  1.	Breaking Down the Song:
+- You break the song into small overlapping clips.
+2.	Finding Patterns:
+- You analyze these clips to find repeating melodies, rhythms, and beats.
+3.	Grouping Similar Patterns:
+- You group all the clips with similar melodies together, all the clips with similar rhythms together, and so on.
+4.	Reconstructing the Song:
+- You put these groups back together to understand the main melody, the rhythm, and the background noise separately.
+- By doing this, SSA helps you understand the underlying structure of your data, making it easier to analyze and forecast future values.
+- Imagine you have a long list of numbers representing something over time, like daily temperatures.
+- SSA starts by breaking this long list into smaller overlapping chunks. Think of it like taking a long sentence and breaking it into overlapping phrases.
+- Next, SSA looks for patterns in these chunks. It uses a mathematical tool called Singular Value Decomposition (SVD) to find these patterns.
+- SVD helps to identify the main trends and repeating cycles in the data, kind of like finding the main themes and repeated phrases in a book.
+- After identifying the patterns, SSA groups similar ones together. For example, it might group all the chunks that show a rising trend or all the chunks that show a repeating cycle.
+- Finally, SSA puts these grouped patterns back together to reconstruct the original data. This helps to separate the main trends, cycles, and random noise.
+- It's like taking the themes and phrases you found in a book and using them to understand the overall story better.
+
+
+## Develop a Clustering AI(Unsupervised learning, find patterns)
+- Clustering involces using algorithms to partition data points into clusters, where each cluster consists of data points that are similar to each other according to certain criteria. 
+- Unlike supervised learning where data is labeled with predefined classes, clustering operates on unlabelled data, aiming to discover inherent structures or patterns 
+- ![alt text](image-158.png)
+- Customer segmentation businesses use clustering to group customers based on purchasing behavior, demographics, or preferences. This helps in targeted marketing strategies and personalized customer experiences.
+- In computer vision, clustering algorithms can group pixels and images based on color or texture similarity, enabling tasks like object recognition and segmentation.
+- Clustering can identify unusual patterns or outliers in data that deviate significantly from normal
+behavior aiding in fraud detection or system monitoring.
+- Clustering techniques are used to group genes with similar expression patterns across different biological conditions, helping biologists to understand gene functions and interactions.
+- ![alt text](image-159.png)
+- ![alt text](image-160.png)
+- ![alt text](image-161.png)
+- ![alt text](image-162.png)
+
+### Building a Clustering AI 
+- ![alt text](image-163.png)
+- We first load the customer data from customers.csv file where we have the customer id, annual income and spending score provided to us 
+- We then create a pipeline to train the model and use the K-means algorithm to group our data into 3 clusters. 
+- Then we apply the model to our input data and for each customer generate the predicted cluster id.
+```c#
+ using Microsoft.ML;
+using Microsoft.ML.Data;
+
+public class CustomerData
+{
+    [LoadColumn(0)]
+    public float CustomerID;
+
+    [LoadColumn(1)]
+    public float AnnualIncome;
+
+    [LoadColumn(2)]
+    public float SpendingScore;
+}
+
+public class ClusterPrediction
+{
+    [ColumnName("PredictedLabel")]
+    public uint PredictedClusterId { get; set; }
+
+    [ColumnName("Score")]
+    public float[] Score { get; set; }
+
+    public float CustomerID { get; set; }
+}
+
+public class Program
+{
+    private static readonly string dataPath = "customers.csv";
+
+    public static void Main(string[] args)
+    {
+        var mlContext = new MLContext();    
+        IDataView dataView = mlContext.Data.LoadFromTextFile<CustomerData>(dataPath, hasHeader: true, separatorChar: ',');
+        //This is a transformation step in the pipeline. It concatenates the columns "AnnualIncome" and "SpendingScore" into a single column called "Features".
+        //The Concatenate method is used to combine multiple columns into a single column, which is a common preprocessing step in machine learning.
+        //The KMeans method is used to train a KMeans clustering model on the "Features" column.
+        //The numberOfClusters parameter specifies the number of clusters to create.
+        // K-means is an unsupervised machine learning algorithm used for clustering data points into a specified number of clusters.
+        var pipeline = mlContext.Transforms.Concatenate("Features", "AnnualIncome", "SpendingScore")
+            .Append(mlContext.Clustering.Trainers.KMeans(featureColumnName: "Features", numberOfClusters: 3));
+        var model = pipeline.Fit(dataView);
+        //The Transform method is used to apply the trained model to the input data and generate predictions.
+        var transformedData = model.Transform(dataView);
+        //The CreateEnumerable method is used to extract the predictions from the transformed data.
+        var predictions = mlContext.Data.CreateEnumerable<ClusterPrediction>(transformedData, reuseRowObject: false);
+        foreach (var prediction in predictions)
+        {
+            Console.WriteLine($"Customer: {prediction.CustomerID} - Cluster: {prediction.PredictedClusterId}");
+        }
+
+    }
+}
+
+```
+
+## Developing a Reinforcement Learning AI 
+- Reinforcement learning is a type of machine learning where an agent learns to make decisions by interacting with its environment.
+- Reinforcement learning is based on the idea of learning from feedback.
+- The agent takes actions in the environment, receives rewards or penalties based on those actions,
+and uses this feedback to improve future behavior.
+- The ultimate goal of reinforcement learning is to train an agent to maximize cumulative reward over
+time.
+- ![alt text](image-164.png)
+- The reward signal is the feedback the agent receives from the environment after taking an action.
+- It can be positive, like a reward or negative like a penalty. The agent's objective is to learn a policy a mapping from states to actions that maximizes the total reward it accumulates over time.
+- This process of maximizing cumulative reward is central to reinforcement learning, and distinguishes
+it from other types of machine learning.
+- A critical aspect of reinforcement learning is the exploration exploitation trade off.
+- ![alt text](image-165.png)
+- Exploration refers to the agent trying out new actions to discover their potential rewards.
+- Exploitation, on the other hand, involves the agent choosing actions that are known to yield high
+rewards based on past experiences.
+- Balancing these two strategies is essential for effective learning.
+- If the agent focuses too much on exploration, it may miss out on exploiting the best known strategies.
+- Conversely, if it focuses too much on exploitation, it might fail to discover even better strategies
+that could yield higher rewards.
+- Q Learning algorithm 
+- ![alt text](image-166.png)
+- ![alt text](image-167.png)
+- ![alt text](image-168.png)
+- ![alt text](image-169.png)
+- ![alt text](image-170.png)
+- ![alt text](image-171.png)
+
+### Developing a RL AI project(Tic, Tac, Toe)
+- ![alt text](image-172.png)
+- We first create a TicTacToe environment where we define a 3 x 3 board and define the states for winning and losing in a tic tac toe game.
+- We then create a QLearning Agent that stores a dictionary of state and qTable values 
+- It chooses the next action based on the qTable values 
+- Over time, it builds it qTable and learns to play the game effectively. 
+- We then test this model by playing it against a random opponent and simulating its moves. 
+- Here is the complete code 
+```c#
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System;
+
+namespace TicTacToe
+{
+    public class TicTacToeEnv
+    {
+        private readonly char[,] board;
+        private readonly char empty = '-';
+        private readonly char playerX = 'X';
+        private readonly char playerO = 'O';
+        private char currentPlayer;
+
+        // Setup an empty 3 x 3 board and set the current player to X
+        public TicTacToeEnv()
+        {
+            board = new char[3, 3];
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    board[i, j] = empty;
+                }
+            }
+            currentPlayer = playerX;
+        }
+
+        public void DisplayBoard()
+        {
+            for (int i = 0; i < 3; i++)
+            {
+
+                for (int j = 0; j < 3; j++)
+                {
+                    Console.Write(board[i, j] + " ");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        // Make a move on the board if the cell is empty
+        public bool MakeMove(int row, int col)
+        {
+            if (row >= 0 && row < 3 && col < 3 && board[row, col] == empty)
+            {
+                board[row, col] = currentPlayer;
+                currentPlayer = currentPlayer == playerX ? playerO : playerX;
+                return true;
+            }
+            return false;
+
+        }
+
+        // Check if the current player has won (horizontal, vertical, diagonal)
+        public bool CheckWin(char player)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                if (board[i, 0] == player && board[i, 1] == player && board[i, 2] == player)
+                {
+                    return true;
+                }
+                if (board[0, i] == player && board[1, i] == player && board[2, i] == player)
+                {
+                    return true;
+                }
+            }
+            if (board[0, 0] == player && board[1, 1] == player && board[2, 2] == player)
+            {
+                return true;
+            }
+            if (board[0, 2] == player && board[1, 1] == player && board[2, 0] == player)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        // Check if the game is a draw and no more moves can be made
+        public bool CheckDraw()
+        {
+            foreach (var cell in board)
+            {
+                if (cell == empty)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public char[,] GetBoard()
+        {
+            return board;
+        }
+    }
+
+    public class QLearningAgent
+    {
+        private readonly Dictionary<string, double[]> qTable;
+        private readonly double learningRate = 0.1;
+        private readonly double discountFactor = 0.9;
+        private readonly double explorationRate = 0.1;
+        private readonly Random random = new Random();
+
+        public QLearningAgent(double learningRate, double discountFactor, double explorationRate)
+        {
+            // A dictionary that maps states to arrays of Q-values. Each state is represented as a string, and the Q-values are stored as an array of doubles.
+            qTable = new Dictionary<string, double[]>();
+            this.learningRate = learningRate;
+            this.discountFactor = discountFactor;
+            this.explorationRate = explorationRate;
+            random = new Random();
+        }
+
+
+        // Choose an action based on the current state. If the state is not in the Q-table, choose a random action.
+        public int ChooseAction(char[,] board)
+        {
+            var state = GetState(board);
+            if (!qTable.ContainsKey(state) || random.NextDouble() < explorationRate)
+            {
+                return random.Next(9);
+            }
+
+            var qValues = qTable[state];
+            double maxQValue = double.MinValue;
+            int action = 0;
+            for (int i = 0; i < qValues.Length; i++)
+            {
+                if (qValues[i] > maxQValue)
+                {
+                    maxQValue = qValues[i];
+                    action = i;
+                }
+            }
+
+            return action;
+        }
+
+
+        // Update the Q-table based on the current state, action, reward, and the next state.
+        public void UpdateQTable(char[,] board, int action, double reward, char[,] nextBoard)
+        {
+            var state = GetState(board);
+            var nextState = GetState(nextBoard);
+            if (!qTable.ContainsKey(state))
+            {
+                qTable[state] = new double[9];
+            }
+            if (!qTable.ContainsKey(nextState))
+            {
+                qTable[nextState] = new double[9];
+            }
+
+            double maxNextQValue = double.MinValue;
+            foreach (var qValue in qTable[nextState])
+            {
+                if (qValue > maxNextQValue)
+                {
+                    maxNextQValue = qValue;
+                }
+            }
+
+            qTable[state][action] = (1 - learningRate) * qTable[state][action] + learningRate * (reward + discountFactor * maxNextQValue);
+        }
+
+        // Get the state of the board as a string
+        private string GetState(char[,] board)
+        {
+            char[] state = new char[9];
+            int index = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    state[index++] = board[i, j];
+                }
+            }
+
+            return new string(state);
+        }
+    }
+
+    public class Program
+    {
+
+        //  We are training a Tic-Tac-Toe playing agent using the Q-learning algorithm. The agent learns to make optimal moves by updating a Q-table based on the rewards it receives during gameplay.
+        static void Main(string[] args)
+        {
+            var env = new TicTacToeEnv();
+            var agent = new QLearningAgent(0.1, 0.9, 0.1);
+
+            // This loop represents the training phase of the agent. The agent plays 10,000 games of Tic-Tac-Toe against a random opponent and updates its Q-table based on the rewards it receives.
+            for (int i = 0; i < 10000; i++)
+            
+            {
+                // Reset the environment for a new game
+                env = new TicTacToeEnv();
+                // The game loop, here '-' indicates that no winner has been determined yet
+                char winner = '-';
+                // Continue playing the game until a winner is determined
+                while (winner == '-')
+                {
+                    // The agent chooses an action based on the current state of the board
+                    var board = env.GetBoard();
+                    //We use the ChooseAction method of the QLearningAgent class to select an action (move) based on the current state of the game board.
+                    //If the current state is not in the Q-table or a random exploration is chosen, a random action is selected.
+                    int action = agent.ChooseAction(board);
+                    //We convert the selected action into row and column indices using simple arithmetic operations.
+                    int row = action / 3;
+                    int col = action % 3;
+                    //We make the move on the board using the MakeMove method of the TicTacToeEnv class.
+                    //If the move is valid, we proceed to check for a win or draw condition.
+
+                    if (env.MakeMove(row, col))
+                    {
+                        var nextBoard = env.GetBoard();
+                        if (env.CheckWin('X'))
+                        {
+                            winner = 'X';
+                            //If the agent wins, we update the Q-table based on the current state, action, reward, and the next state using the UpdateQTable method of the QLearningAgent class.
+                            //The reward for a win is typically set to 1.
+                            agent.UpdateQTable(board, action, 1, nextBoard);
+                        }
+                        else if (env.CheckDraw())
+                        {
+                            winner = 'D';
+                            //If the game is a draw, we update the Q-table based on the current state, action, reward, and the next state using the UpdateQTable method of the QLearningAgent class.
+                            //The reward for a draw is typically set to 0.
+                            agent.UpdateQTable(board, action, 0, nextBoard);
+                        }
+                        //If the game is not over, we update the Q-table based on the current state, action, reward, and the next state using the UpdateQTable method of the QLearningAgent class.
+                        else
+                        {
+                            // The opponent makes a random move
+                            while (true)
+                            {
+                                int opponentAction = new Random().Next(9);
+                                int opponentRow = opponentAction / 3;
+                                int opponentCol = opponentAction % 3;
+                                if (env.MakeMove(opponentRow, opponentCol))
+                                {
+                                    break;
+                                }
+                            }
+
+                            // Get the updated game board after opponent's move
+                            nextBoard = env.GetBoard();
+                            //If the opponent ('O') wins the game, we update the Q-table with a reward of -1 for the chosen action.
+                            if (env.CheckWin('O'))
+                            {
+                                winner = 'O';
+                                agent.UpdateQTable(board, action, -1, nextBoard);
+                            }
+                            //If the game is a draw, we update the Q-table with a reward of 0 for the chosen action.
+                            else if (env.CheckDraw())
+                            {
+                                winner = 'D';
+                                agent.UpdateQTable(board, action, 0, nextBoard);
+                            }
+                            //If the game is still ongoing, we update the Q-table with a reward of 0 for the chosen action.
+                            else
+                            {
+                                agent.UpdateQTable(board, action, 0, nextBoard);
+                            }
+                        }
+                    }
+
+
+                    }
+            }
+
+            // After training the agent, we can test its performance by playing a game against it.
+            var testEnv = new TicTacToeEnv();
+
+            // The game loop for testing the agent against a random opponent
+            while (true)
+            {
+                // Display the current state of the game board
+                testEnv.DisplayBoard();
+                var testBoard = testEnv.GetBoard();
+                // The agent chooses an action based on the current state of the board
+                int testAction = agent.ChooseAction(testBoard);
+                int testRow = testAction / 3;
+                int testCol = testAction % 3;
+                testEnv.MakeMove(testRow, testCol);
+                // Check if the agent ('X') has won or if the game is a draw and we break out of the loop
+                if (testEnv.CheckWin('X') || testEnv.CheckDraw())
+                {
+                    testEnv.DisplayBoard();
+                    break;
+                }
+
+                //Simulate the opponent's move by choosing a random valid action and making the move on the game board.
+                while (true)
+                {
+                    int opponentAction = new Random().Next(9);
+                    int opponentRow = opponentAction / 3;
+                    int opponentCol = opponentAction % 3;
+                    if (testEnv.MakeMove(opponentRow, opponentCol))
+                    {
+                        break;
+                    }
+                }
+
+                //If the opponent ('O') wins the game or the game ends in a draw, we display the final state of the game board and break out of the testing loop.
+                if (testEnv.CheckWin('O') || testEnv.CheckDraw())
+                {
+                    testEnv.DisplayBoard();
+                    break;
+
+                }
+            }
+            }
+    }
+
+}
+
+```
+
+## Data Manipulation and Analysis Fundamentals
+- Reading or Writing Data from csv file or json file using c#
+```c#
+using CsvHelper;
+using System.Globalization;
+using Newtonsoft.Json;
+using System.IO;
+using System.Collections.Generic;
+
+
+class Program
+{
+    static void Main()
+    {
+        string csvFilePath = @"readAndWriteSampleCSV.csv";
+        using (var reader = new StreamReader(csvFilePath))
+        using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+        {
+            var records = csv.GetRecords<MyData>();
+            foreach (var record in records)
+            {
+                record.DisplayInfo();
+            }
+        }
+
+        var dataToWrite = new List<MyData>() { new MyData { Name = "John", Age = 25, City = "New York" }
+                                             ,new MyData { Name = "Jane", Age = 30, City = "Los Angeles" }
+                                             ,new MyData{Name = "Bob", Age = 25, City = "Chicago"} };
+
+        string outputCsvFilePath = @"output.csv";
+        using (var writer = new StreamWriter(outputCsvFilePath))
+        using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+        {
+            csv.WriteRecords(dataToWrite);
+        }
+
+        string jsonFilePath = @"example.json";
+        var jsonData = File.ReadAllText(jsonFilePath);
+        var dataFromJson = JsonConvert.DeserializeObject<List<MyData>>(jsonData);
+        foreach(var item in dataFromJson)
+        {
+            item.DisplayInfo();
+        }
+
+        var dataToWriteJson = new List<MyData>() { new MyData { Name = "John", Age = 25, City = "New York" }
+                                             ,new MyData { Name = "Jane", Age = 30, City = "Los Angeles" }
+                                             ,new MyData{Name = "Bob", Age = 25, City = "Chicago"} };
+
+        string outputJsonFilePath = @"outputFile.json";
+        var json = JsonConvert.SerializeObject(dataToWriteJson);
+        File.WriteAllText(outputJsonFilePath, json);
+    }
+}
+
+public class MyData
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public string City { get; set; }
+
+    public void DisplayInfo()
+    {
+        Console.WriteLine($"Name: {Name}, Age: {Age}, City: {City}");
+    }
+}
+
+```
+
+### Data Preprocessing Techniques 
+- ![alt text](image-173.png)
+- ![alt text](image-174.png)
+```c#
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+
+public class MyData
+{
+    public string Name { get; set; }
+    public int? Age { get; set; }
+}
+
+public class Program
+{
+    public static void Main()
+    {
+        List<MyData> list = new List<MyData>();
+        list.Add(new MyData { Name = "John", Age = 25 });
+        list.Add(new MyData { Name = "Diana", Age = null });
+        list.Add(new MyData { Name = "Jane", Age = 30 });
+        list.Add(new MyData { Name = "Bob", Age = null });
+
+        List<MyData> cleanedData  = list.Where(x => x.Age.HasValue).ToList();
+        double meanAge = list.Where(x => x.Age.HasValue).Average(x => x.Age.Value);
+        List<MyData> imputedData = list.Select(x => new MyData { Name = x.Name, Age = x.Age ?? (int)meanAge }).ToList();
+        Console.WriteLine("Data after removing missing values");
+        cleanedData.ForEach(x => Console.WriteLine($"Name: {x.Name}, Age: {x.Age}"));
+        Console.WriteLine("\nData after imputing missing values");
+        imputedData.ForEach(x => Console.WriteLine($"Name: {x.Name}, Age: {x.Age}"));
+
+    }
+}
+
+```
+### Feature Scaling 
+- Scaling is a preprocessing technique used in machine learning to normalize the range of features or variables. It helps to ensure that all features have a similar scale, which can be beneficial for many machine learning algorithms.
+- Scaling is important because features with different scales can have a disproportionate impact on the learning process.
+-  Some machine learning algorithms, such as gradient descent, are sensitive to the scale of the input features. If the features have different scales, the algorithm may take longer to converge or may not converge at all. Scaling the features can help mitigate this issue.
+-  n the provided code, scaling is performed on the Age variable. The purpose is to transform the age values to a range between 0 and 1. This is achieved by subtracting the minimum age from each value and then dividing it by the range of ages (maximum age minus minimum age). The resulting scaled values are then stored in the scaledData list.
+-  It's important to note that not all machine learning algorithms require scaling. For example, decision trees and random forests are not sensitive to feature scaling. However, many other algorithms, such as support vector machines, k-nearest neighbors, and neural networks, can benefit from scaling. It's a good practice to scale the features before training these types of algorithms to improve their performance.
+```c#
+  List<MyData> data = new List<MyData>();
+ data.Add(new MyData { Name = "John", Age = 25 });
+ data.Add(new MyData { Name = "Diana", Age = 30 });
+ data.Add(new MyData { Name = "Jane", Age = 35 });
+ data.Add(new MyData { Name = "Bob", Age = 40 });
+
+ int minAge = data.Min(x => x.Age.Value);
+ int maxAge = data.Max(x => x.Age.Value);
+
+ List<ScaledData> scaledData = data.Select(x => new ScaledData { Name = x.Name, Age = (double)(x.Age.Value - minAge) / (maxAge - minAge) }).ToList();
+
+ Console.WriteLine("\nData after scaling");
+ scaledData.ForEach(x => Console.WriteLine($"Name: {x.Name}, Age: {x.Age}"));
+```
+
+### Encoding Categorical Variables(using OneHotEncoding)
+- One-hot encoding is a common technique used in machine learning algorithms to represent categorical variables as binary vectors.
+- In machine learning, algorithms typically work with numerical data, and categorical variables cannot be directly used as input. One-hot encoding transforms categorical variables into a binary vector representation, where each category is represented by a separate binary feature. This allows machine learning algorithms to effectively process and learn from categorical data.
+- In the provided code, the dataCategorical list contains objects of the MyDataCategorical class, which has two properties: Name and Category. The goal is to convert the categorical variable Category into one-hot encoded features.
+- The code uses the Select LINQ method to transform each element of the dataCategorical list into a new anonymous type. The anonymous type has properties for Name, CategoryA, CategoryB, and CategoryC. The values of CategoryA, CategoryB, and CategoryC are determined using conditional expressions (x.Category == "A" ? 1 : 0, etc.). If the Category value matches the specified category, the corresponding property is set to 1; otherwise, it is set to 0.
+- The resulting oneHotEncodedData list contains the transformed data, where each categorical value is represented by a binary feature. This one-hot encoded representation can then be used as input for machine learning algorithms that require numerical data.
+- One-hot encoding is important in machine learning because it allows algorithms to effectively handle categorical variables and capture the relationships between different categories. It helps prevent the algorithm from assuming any ordinal relationship between the categories and treats them as independent features.
+```c#
+List<MyDataCategorical> dataCategorical = new List<MyDataCategorical>();
+dataCategorical.Add(new MyDataCategorical { Name = "John", Category = "A" });
+dataCategorical.Add(new MyDataCategorical { Name = "Diana", Category = "B" });
+dataCategorical.Add(new MyDataCategorical { Name = "Jane", Category = "A" });
+dataCategorical.Add(new MyDataCategorical { Name = "Bob", Category = "C" });
+
+var categories = dataCategorical.Select(x => x.Category).Distinct().ToList();
+var oneHotEncodedData = dataCategorical.Select(x => new
+{
+    Name = x.Name,
+    CategoryA = x.Category == "A" ? 1 : 0,
+    CategoryB = x.Category == "B" ? 1 : 0,
+    CategoryC = x.Category == "C" ? 1 : 0
+}).ToList();
+
+Console.WriteLine("\nData after one-hot encoding");
+oneHotEncodedData.ForEach(x => Console.WriteLine($"Name: {x.Name}, CategoryA: {x.CategoryA}, CategoryB: {x.CategoryB}, CategoryC: {x.CategoryC}"));
+
+```
+
+### Exploratory Data Analysis(EDA)
+- We need to use statistical techniques to gain insights into underlying patterns and structure of our data.
+- ![alt text](image-175.png)
+- The mean is the average of a set of numbers calculated by dividing the sum of all the numbers by the
+count of numbers.
+- ![alt text](image-176.png)
+- ![alt text](image-177.png)
+- ![alt text](image-178.png)
+- ![alt text](image-179.png)
+```c#
+ public static void Main()
+{
+    List<double> data = new List<double>() { 2,4,4,5,5,7,9};
+    // Calculate the mean
+    // The mean is the average of a set of numbers calculated by dividing the sum of all the numbers by the
+    //count of numbers.
+    double mean = data.Average();
+    // Calculate the median
+    // The median is the middle number in a sorted, ascending or descending, list of numbers and can be more
+    double median = data.OrderBy(x => x).Skip(data.Count / 2).First();
+    // Calculate the mode
+    // The mode is the number that appears most frequently in a data set.
+    double mode = data.GroupBy(n=>n).OrderByDescending(g => g.Count()).First().Key;
+    // Calculate the standard deviation
+    // The standard deviation is a measure of the amount of variation or dispersion of a set of values.
+    double stdDeviation = Math.Sqrt(data.Average(v => Math.Pow(v - mean, 2)));
+    // Calculate the minimum value
+    // The minimum value is the smallest value in a data set.
+    double min = data.Min();
+    // Calculate the maximum value
+    // The maximum value is the largest value in a data set.
+    double max = data.Max();
+    Console.WriteLine("Mean: " + mean);
+    Console.WriteLine("Median: " + median);
+    Console.WriteLine("Mode: " + mode);
+    Console.WriteLine("Standard Deviation: " + stdDeviation);
+    Console.WriteLine("Min: " + min);
+    Console.WriteLine("Max: " + max);
+
+}
+
+```
+
+### Data Visualization
+- Visualizations are powerful tools for understanding data patterns, trends, and distributions.
+- ![alt text](image-180.png)
+- ![alt text](image-181.png)
+- ![alt text](image-182.png)
+- ![alt text](image-183.png)
+- Binning is the process of converting continuous variables into discrete categories or bins.
+- It helps in reducing the effects of minor observation errors.
+- We will install the ScottPlot and SkiaSharp packages
+- We will use it to plot the visualization of data:
+```c#
+  Plot plot = new Plot();
+ double[] dataX = { 1, 2, 3, 4, 5};
+ double[] dataY = { 2, 4, 6, 8, 10 };
+
+ plot.Title("Title of the graph");
+ plot.XLabel("X values");
+ plot.YLabel("Y values");
+ plot.Add.Scatter(dataX,dataY);
+ plot.SavePng("demo.png",500,500);
+
+```
+- ![alt text](image-184.png)
+
+### Data Summarization
+- ![alt text](image-185.png)
+- ![alt text](image-186.png)
+- This process helps in reducing the data to a more manageable form, allowing for easier analysis and
+interpretation.
+- ![alt text](image-187.png)
+- Once data is grouped, aggregation functions can be applied to each group independently, enabling comparative analysis between different subsets of the data.
+- ![alt text](image-188.png)
+```c#
+  List<Sale> sales = new List<Sale>()
+ {
+     new Sale() { Category = "Electronics", Amount = 1000 },
+     new Sale() { Category = "Fashion", Amount = 1500 },
+     new Sale() { Category = "Cosmetics", Amount = 500 },
+     new Sale() { Category = "Electronics", Amount = 2000 },
+     new Sale() { Category = "Fashion", Amount = 2500 },
+     new Sale() { Category = "Cosmetics", Amount = 1000 },
+     new Sale() { Category = "Electronics", Amount = 3000 },
+     new Sale() { Category = "Fashion", Amount = 3500 },
+     new Sale() { Category = "Cosmetics", Amount = 2000 },
+ };
+
+ var summary = sales.GroupBy(s => s.Category)
+     .Select(g => new
+     {
+         Category = g.Key,
+         TotalSales = g.Sum(s => s.Amount),
+         Average = g.Average(s => s.Amount),
+         Min = g.Min(s => s.Amount),
+         Max = g.Max(s => s.Amount)
+     }).ToList();
+
+ foreach (var item in summary)
+ {
+     Console.WriteLine($"Category: {item.Category}, Total Sales: {item.TotalSales}");
+ }
+
+```
+
+## Feature Engineering
+- Goal is to improve Model Performance
+- We can create new features from existing data 
+- We can select relevant features for modeling and also transform features to improve model performance.
+- Suppose we have a data set containing information about houses, including features such as the number of bedrooms, bathrooms, and size of the house in square feet.
+- We can create new features that might help our model perform better.
+```c#
+ public class House
+{
+    public int Bedrooms { get; set; }
+    public int Bathrooms { get; set; }
+    public double Size { get; set; }
+
+    // New Feature
+    // Provide additional insights to our model
+    public double SizePerBedroom { get; set; }
+}
+
+public class Program
+{
+    public static void Main()
+    {
+        List<House> houses = new List<House>() { new House
+        {
+            Bedrooms = 3,
+            Bathrooms = 2,
+            Size = 1500
+        },
+        new House
+        {
+            Bedrooms = 4,
+            Bathrooms = 3,
+            Size = 2000
+        },
+new House
+        {
+            Bedrooms = 2,
+            Bathrooms = 1,
+            Size = 1000
+        }};
+
+        foreach (House house in houses)
+        {
+            house.SizePerBedroom = house.Size / house.Bedrooms;
+        }
+
+        foreach (House house in houses)
+        {
+            Console.WriteLine("Bedrooms: " + house.Bedrooms + " Bathrooms: " + house.Bathrooms + " Size: " + house.Size + " SizePerBedroom: " + house.SizePerBedroom);
+        }
+    }
+}
+
+
+
+```
+### Feature Selection
+- Choose most relevant features for our model 
+- To prevent overfitting and reduce computational complexity in C#, we can use correlation analysis or feature importance scores to select features.
+- We need to install MathNet.Numerics nuget package 
+- Then we have 2 arrays sizes of house and their prices. 
+- We calculate the Pearson Correlation Coefficient between them 
+- The Pearson correlation coefficient is a measure of the linear relationship between two variables. - It ranges from -1 to 1, where -1 indicates a perfect negative correlation, 1 indicates a perfect positive correlation, and 0 indicates no correlation.
+- In this specific example, the sizes array represents the sizes of houses, and the prices array represents the corresponding prices of those houses. The correlation coefficient is calculated to determine how closely the size and price of a house are related.
+```c#
+ double[] sizes = { 1500, 2000, 1000 };
+double[] prices = { 300000, 400000, 200000 };
+// Calculate the correlation between size and price
+// A high correlation indicates that size and price are closely related
+//It also indicates the feature is relevant to the model
+double correlation = Correlation.Pearson(sizes, prices);
+Console.WriteLine("Correlation between size and price: " + correlation);
+```
+- The sizes array contains the sizes of three houses, and the prices array contains the corresponding prices. By calling Correlation.Pearson(sizes, prices), we calculate the Pearson correlation coefficient between these two arrays.
+- The resulting correlation coefficient will indicate the strength and direction of the relationship between the size and price of the houses. If the correlation coefficient is close to 1, it means that as the size of the house increases, the price also tends to increase. 
+- If the correlation coefficient is close to -1, it means that as the size of the house increases, the price tends to decrease. 
+- If the correlation coefficient is close to 0, it means that there is no significant linear relationship between the size and price of the houses.
+
+### Feature Transformation 
+- Feature transformation involves scaling, encoding, or otherwise modifying features to improve model
+performance.
+- Common transformations include normalization, standardization, and encoding categorical variables.
+- In this code, we normalize the size feature and encode categorical variables.
+- Normalization scales the feature to a range between 0 and 1, and encoding converts categorical data
+into numerical values.
+- Feature engineering is an essential skill for data scientists and machine learning practitioners.
+- By creating new features, selecting relevant ones, and transforming them appropriately, you can significantly improve the performance of your models.
+
+```c#
+         #region FeatureTransformation
+        List<House> housesForTransformation = new List<House>() { new House
+        {
+            Bedrooms = 3,
+            Bathrooms = 2,
+            Size = 1500,
+            Price = 300000,
+            Category = "Single Family"
+        },
+        new House
+        {
+            Bedrooms = 4,
+            Bathrooms = 3,
+            Size = 2000,
+            Price = 400000,
+            Category = "Condo"
+        },
+new House
+        {
+            Bedrooms = 2,
+            Bathrooms = 1,
+            Size = 1000,
+            Price = 200000,
+            Category = "Townhouse"
+        }};
+
+        double maxSize = housesForTransformation.Max(h => h.Size);
+        double minSize = housesForTransformation.Min(h => h.Size);
+        foreach(var house in housesForTransformation)
+        {
+            house.NormalizedSize = (house.Size - minSize) / (maxSize - minSize);
+            Console.WriteLine("Size: " + house.Size + " Normalized Size: " + house.NormalizedSize);
+        }
+
+
+        var categoryEncoding = new Dictionary<string, int>
+        {
+            {"Single Family", 0},
+            {"Condo", 1},
+            {"Townhouse", 2}
+        };
+
+        foreach (var house in housesForTransformation)
+        {
+            house.CategoryEncoded = categoryEncoding[house.Category];
+            Console.WriteLine("Category: " + house.Category + " Category Encoded: " + house.CategoryEncoded);
+        }
+
+
+        #endregion
+
+```
+
+## Data Integration and Aggregation
+- Here we combine data from multiple sources, merge data sets based on common keys, and perform
+aggregation operations to summarize data at different levels.
+```c#
+ public class Employee
+{
+    public int EmployeeId { get; set; }
+    public string Name { get; set; }
+}
+
+public class Department
+{
+    public int EmployeeId { get; set; }
+    public string DepartmentName { get; set; }
+}
+
+public class Program
+{
+    public static void Main()
+    {
+        List<Employee> employees = new List<Employee>()
+    {
+        new Employee { EmployeeId = 1, Name = "John Doe" },
+        new Employee { EmployeeId = 2, Name = "Jane Doe" },
+        new Employee { EmployeeId = 3, Name = "Sam Doe" }
+    };
+
+        List<Department> departments = new List<Department>()
+    {
+        new Department { EmployeeId = 1, DepartmentName = "HR" },
+        new Department { EmployeeId = 2, DepartmentName = "IT" },
+        new Department { EmployeeId = 3, DepartmentName = "Finance" }
+    };
+
+        var combinedData = from employee in employees
+                           join department in departments
+                           on employee.EmployeeId equals department.EmployeeId
+                           select new
+                           {
+                               employee.EmployeeId,
+                               employee.Name,
+                               department.DepartmentName
+                           };
+
+        foreach (var data in combinedData)
+        {
+            Console.WriteLine($"EmployeeId: {data.EmployeeId},Name:{data.Name}, Department: {data.DepartmentName}  ");
+        }
+    }
+}
+
+
+```
+
+### Data Aggregation
+- Aggregation operations allow us to summarize data at different levels, such as calculating the total, average, or count of values in the data set.
+- We can combine and summarize data from various sources, providing valuable insights for
+analysis and decision making.
+```c#
+ List<SalesRecord> salesRecords = new List<SalesRecord>()
+{
+    new SalesRecord { Product = "Laptop", Price = 1000, Quantity = 2 },
+    new SalesRecord { Product = "Mobile", Price = 500, Quantity = 5 },
+    new SalesRecord { Product = "Tablet", Price = 300, Quantity = 3 },
+    new SalesRecord { Product = "Desktop", Price = 1500, Quantity = 1 }
+};
+
+//Group and apply aggregation functions
+//Group sales records by product and calculate total revenue and quantity
+var totalSales = salesRecords.GroupBy(s => s.Product).Select(s => new
+{
+    Product = s.Key,
+    TotalRevenue = s.Sum(p => p.Price * p.Quantity),
+    TotalQuantity = s.Sum(p => p.Quantity)
+});
+
+foreach (var sales in totalSales)
+{
+    Console.WriteLine($"Product: {sales.Product}, Total Revenue: {sales.TotalRevenue}, Total Quantity: {sales.TotalQuantity}");
+}
+```
+
+
+

@@ -11,19 +11,39 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MachineLearningExample", ".
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MachineLearningModelSelection", "..\MachineLearningModelSelection\MachineLearningModelSelection.csproj", "{7B48438E-1CA5-44B5-9967-25E0110E55B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SentimentAnalysis", "..\SentimentAnalysis\SentimentAnalysis.csproj", "{D6108235-9797-4B3C-9F21-006C1B4A7586}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SentimentAnalysis", "..\SentimentAnalysis\SentimentAnalysis.csproj", "{D6108235-9797-4B3C-9F21-006C1B4A7586}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageClassification", "..\ImageClassification\ImageClassification.csproj", "{955767CA-9261-4C8A-9FE0-D41182C1973D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageClassification", "..\ImageClassification\ImageClassification.csproj", "{955767CA-9261-4C8A-9FE0-D41182C1973D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Regression", "..\Regression\Regression.csproj", "{D6CA7002-1098-4E5B-A192-4BF67B7C5A88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Regression", "..\Regression\Regression.csproj", "{D6CA7002-1098-4E5B-A192-4BF67B7C5A88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForecastingAI", "..\ForecastingAI\ForecastingAI.csproj", "{68C00D77-9778-40F8-A96C-AC08DAC36764}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ForecastingAI", "..\ForecastingAI\ForecastingAI.csproj", "{68C00D77-9778-40F8-A96C-AC08DAC36764}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recommendation", "..\Recommendation\Recommendation.csproj", "{8CA8356F-035B-4767-A63A-268688E62562}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recommendation", "..\Recommendation\Recommendation.csproj", "{8CA8356F-035B-4767-A63A-268688E62562}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SentimentAnalysisAI", "..\SentimentAnalysisAI\SentimentAnalysisAI.csproj", "{10C7E3AA-6B4C-45BF-887E-5A8BB769AFBB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SentimentAnalysisAI", "..\SentimentAnalysisAI\SentimentAnalysisAI.csproj", "{10C7E3AA-6B4C-45BF-887E-5A8BB769AFBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnomalyDetectionAI", "..\AnomalyDetectionAI\AnomalyDetectionAI.csproj", "{D7B75ED9-34E2-47E6-BC1B-A7A326802241}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnomalyDetectionAI", "..\AnomalyDetectionAI\AnomalyDetectionAI.csproj", "{D7B75ED9-34E2-47E6-BC1B-A7A326802241}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextGeneration", "..\TextGeneration\TextGeneration.csproj", "{C54BB460-62C0-4E30-9416-DDEB6AB6D325}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeSeriesAnalysis", "..\TimeSeriesAnalysis\TimeSeriesAnalysis.csproj", "{E0FD2151-5BB2-4A63-8576-02D8689E1867}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clustering", "..\Clustering\Clustering.csproj", "{DE9402F2-7354-40FF-9C3E-AE375D8ED56B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReinforcementLearning", "..\ReinforcementLearning\ReinforcementLearning.csproj", "{6DA35942-0067-4FEF-9504-EC65FAC2AC2A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadWriteExample", "..\ReadWriteExample\ReadWriteExample.csproj", "{4AD23F1B-3EBE-4171-B536-8F1DE58EF33C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataPreprocessingTechniques", "..\DataPreprocessingTechniques\DataPreprocessingTechniques.csproj", "{A1C58230-FFBB-4E47-898B-48559917B1E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DescriptiveStatistics", "..\DescriptiveStatistics\DescriptiveStatistics.csproj", "{A43CE295-DB51-437E-8452-8FC205FBCF20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataVisualization", "..\DataVisualization\DataVisualization.csproj", "{0CE5E6F1-A7C3-409F-AE97-AB22A6874098}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeatureEngineering", "..\FeatureEngineering\FeatureEngineering.csproj", "{46369B76-D2C9-44BF-B066-F10F6934EF28}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataIntegrationAggregation", "..\DataIntegrationAggregation\DataIntegrationAggregation.csproj", "{11A6C596-661A-4D0E-ABDC-707E0BC5A989}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +95,46 @@ Global
 		{D7B75ED9-34E2-47E6-BC1B-A7A326802241}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7B75ED9-34E2-47E6-BC1B-A7A326802241}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7B75ED9-34E2-47E6-BC1B-A7A326802241}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C54BB460-62C0-4E30-9416-DDEB6AB6D325}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C54BB460-62C0-4E30-9416-DDEB6AB6D325}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C54BB460-62C0-4E30-9416-DDEB6AB6D325}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C54BB460-62C0-4E30-9416-DDEB6AB6D325}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0FD2151-5BB2-4A63-8576-02D8689E1867}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0FD2151-5BB2-4A63-8576-02D8689E1867}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0FD2151-5BB2-4A63-8576-02D8689E1867}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0FD2151-5BB2-4A63-8576-02D8689E1867}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE9402F2-7354-40FF-9C3E-AE375D8ED56B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE9402F2-7354-40FF-9C3E-AE375D8ED56B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE9402F2-7354-40FF-9C3E-AE375D8ED56B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE9402F2-7354-40FF-9C3E-AE375D8ED56B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DA35942-0067-4FEF-9504-EC65FAC2AC2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DA35942-0067-4FEF-9504-EC65FAC2AC2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DA35942-0067-4FEF-9504-EC65FAC2AC2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DA35942-0067-4FEF-9504-EC65FAC2AC2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AD23F1B-3EBE-4171-B536-8F1DE58EF33C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AD23F1B-3EBE-4171-B536-8F1DE58EF33C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AD23F1B-3EBE-4171-B536-8F1DE58EF33C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AD23F1B-3EBE-4171-B536-8F1DE58EF33C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1C58230-FFBB-4E47-898B-48559917B1E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1C58230-FFBB-4E47-898B-48559917B1E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1C58230-FFBB-4E47-898B-48559917B1E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1C58230-FFBB-4E47-898B-48559917B1E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A43CE295-DB51-437E-8452-8FC205FBCF20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A43CE295-DB51-437E-8452-8FC205FBCF20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A43CE295-DB51-437E-8452-8FC205FBCF20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A43CE295-DB51-437E-8452-8FC205FBCF20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CE5E6F1-A7C3-409F-AE97-AB22A6874098}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CE5E6F1-A7C3-409F-AE97-AB22A6874098}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CE5E6F1-A7C3-409F-AE97-AB22A6874098}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CE5E6F1-A7C3-409F-AE97-AB22A6874098}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46369B76-D2C9-44BF-B066-F10F6934EF28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46369B76-D2C9-44BF-B066-F10F6934EF28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46369B76-D2C9-44BF-B066-F10F6934EF28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46369B76-D2C9-44BF-B066-F10F6934EF28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11A6C596-661A-4D0E-ABDC-707E0BC5A989}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11A6C596-661A-4D0E-ABDC-707E0BC5A989}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11A6C596-661A-4D0E-ABDC-707E0BC5A989}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11A6C596-661A-4D0E-ABDC-707E0BC5A989}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
