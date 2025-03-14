@@ -25,29 +25,31 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SentimentAnalysisAI", "..\S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnomalyDetectionAI", "..\AnomalyDetectionAI\AnomalyDetectionAI.csproj", "{D7B75ED9-34E2-47E6-BC1B-A7A326802241}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextGeneration", "..\TextGeneration\TextGeneration.csproj", "{C54BB460-62C0-4E30-9416-DDEB6AB6D325}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextGeneration", "..\TextGeneration\TextGeneration.csproj", "{C54BB460-62C0-4E30-9416-DDEB6AB6D325}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeSeriesAnalysis", "..\TimeSeriesAnalysis\TimeSeriesAnalysis.csproj", "{E0FD2151-5BB2-4A63-8576-02D8689E1867}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimeSeriesAnalysis", "..\TimeSeriesAnalysis\TimeSeriesAnalysis.csproj", "{E0FD2151-5BB2-4A63-8576-02D8689E1867}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clustering", "..\Clustering\Clustering.csproj", "{DE9402F2-7354-40FF-9C3E-AE375D8ED56B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Clustering", "..\Clustering\Clustering.csproj", "{DE9402F2-7354-40FF-9C3E-AE375D8ED56B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReinforcementLearning", "..\ReinforcementLearning\ReinforcementLearning.csproj", "{6DA35942-0067-4FEF-9504-EC65FAC2AC2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReinforcementLearning", "..\ReinforcementLearning\ReinforcementLearning.csproj", "{6DA35942-0067-4FEF-9504-EC65FAC2AC2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadWriteExample", "..\ReadWriteExample\ReadWriteExample.csproj", "{4AD23F1B-3EBE-4171-B536-8F1DE58EF33C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReadWriteExample", "..\ReadWriteExample\ReadWriteExample.csproj", "{4AD23F1B-3EBE-4171-B536-8F1DE58EF33C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataPreprocessingTechniques", "..\DataPreprocessingTechniques\DataPreprocessingTechniques.csproj", "{A1C58230-FFBB-4E47-898B-48559917B1E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataPreprocessingTechniques", "..\DataPreprocessingTechniques\DataPreprocessingTechniques.csproj", "{A1C58230-FFBB-4E47-898B-48559917B1E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DescriptiveStatistics", "..\DescriptiveStatistics\DescriptiveStatistics.csproj", "{A43CE295-DB51-437E-8452-8FC205FBCF20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DescriptiveStatistics", "..\DescriptiveStatistics\DescriptiveStatistics.csproj", "{A43CE295-DB51-437E-8452-8FC205FBCF20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataVisualization", "..\DataVisualization\DataVisualization.csproj", "{0CE5E6F1-A7C3-409F-AE97-AB22A6874098}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataVisualization", "..\DataVisualization\DataVisualization.csproj", "{0CE5E6F1-A7C3-409F-AE97-AB22A6874098}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeatureEngineering", "..\FeatureEngineering\FeatureEngineering.csproj", "{46369B76-D2C9-44BF-B066-F10F6934EF28}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FeatureEngineering", "..\FeatureEngineering\FeatureEngineering.csproj", "{46369B76-D2C9-44BF-B066-F10F6934EF28}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataIntegrationAggregation", "..\DataIntegrationAggregation\DataIntegrationAggregation.csproj", "{11A6C596-661A-4D0E-ABDC-707E0BC5A989}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataIntegrationAggregation", "..\DataIntegrationAggregation\DataIntegrationAggregation.csproj", "{11A6C596-661A-4D0E-ABDC-707E0BC5A989}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathNetNumerics", "..\MathNetNumerics\MathNetNumerics.csproj", "{4401E0FA-FAE2-43AA-B017-9AF4199DFC56}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MathNetNumerics", "..\MathNetNumerics\MathNetNumerics.csproj", "{4401E0FA-FAE2-43AA-B017-9AF4199DFC56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumSharpScientificComputing", "..\NumSharpScientificComputing\NumSharpScientificComputing.csproj", "{9B2C3EE5-3EFA-4432-9A3D-512C1A0081DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NumSharpScientificComputing", "..\NumSharpScientificComputing\NumSharpScientificComputing.csproj", "{9B2C3EE5-3EFA-4432-9A3D-512C1A0081DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeedleTimeSeries", "..\DeedleTimeSeries\DeedleTimeSeries.csproj", "{5984A7F7-26CC-4864-990C-96E4609DF3D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -147,6 +149,10 @@ Global
 		{9B2C3EE5-3EFA-4432-9A3D-512C1A0081DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B2C3EE5-3EFA-4432-9A3D-512C1A0081DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B2C3EE5-3EFA-4432-9A3D-512C1A0081DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5984A7F7-26CC-4864-990C-96E4609DF3D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5984A7F7-26CC-4864-990C-96E4609DF3D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5984A7F7-26CC-4864-990C-96E4609DF3D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5984A7F7-26CC-4864-990C-96E4609DF3D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

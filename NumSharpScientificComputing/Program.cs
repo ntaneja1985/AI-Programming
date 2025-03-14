@@ -270,8 +270,16 @@ public class Program
         var stackedHorizontally = np.hstack([array7, array8]);
         var stackedVertically = np.vstack([array7, array8]);
         Console.WriteLine("Stacked Horizontally:");
+        //Stacked Horizontally:
+        //[[1, 2, 5, 6],
+        //[3, 4, 7, 8]]
         Console.WriteLine(stackedHorizontally.ToString());
         Console.WriteLine("Stacked Vertically:");
+        //Stacked Vertically:
+        //[[1, 2],
+        //[3, 4],
+        //[5, 6],
+        //[7, 8]]
         Console.WriteLine(stackedVertically.ToString());
 
 
