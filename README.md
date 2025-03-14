@@ -3924,6 +3924,22 @@ into numerical values.
 - By creating new features, selecting relevant ones, and transforming them appropriately, you can significantly improve the performance of your models.
 
 ```c#
+
+public class House
+{
+    public int Bedrooms { get; set; }
+    public int Bathrooms { get; set; }
+    public double Size { get; set; }
+    public double Price { get; set; }
+    public double NormalizedSize { get; set; }
+
+    public string Category { get; set; }
+    public int CategoryEncoded { get; set; }
+
+    // New Feature
+    // Provide additional insights to our model
+    public double SizePerBedroom { get; set; }
+}
          #region FeatureTransformation
         List<House> housesForTransformation = new List<House>() { new House
         {
@@ -4060,4 +4076,509 @@ foreach (var sales in totalSales)
 ```
 
 
+## Using Math.NET Numerics library for Data Analysis
+- Standard deviation is a measure of the amount of variation or dispersion in a set of values. It quantifies how much the values in a data set deviate from the mean (average) of the data set. A low standard deviation indicates that the values are close to the mean, while a high standard deviation indicates that the values are spread out over a wider range.
+- The mean is the average of all the values in the data set. The standard deviation uses the mean as a reference point to measure the spread of the values. Specifically, it calculates the average distance of each value from the mean.
+- Standard deviation is a crucial metric in statistical analysis for several reasons:
+1.	Measure of Dispersion: It quantifies the amount of variation or dispersion in a set of data values. A low standard deviation indicates that the data points are close to the mean, while a high standard deviation indicates that the data points are spread out over a wider range.
+2.	Comparison of Data Sets: It allows for the comparison of the spread of different data sets. For example, two data sets with the same mean but different standard deviations will have different levels of variability.
+3.	Normal Distribution: In a normal distribution, about 68% of the data values fall within one standard deviation of the mean, about 95% within two standard deviations, and about 99.7% within three standard deviations. This property is known as the empirical rule or the 68-95-99.7 rule.
+4.	Risk Assessment: In finance, standard deviation is used to measure the risk or volatility of an investment. A higher standard deviation indicates a higher risk, as the investment's returns are more spread out from the mean.
+5.	Quality Control: In manufacturing and quality control, standard deviation is used to determine the consistency of a process. A low standard deviation indicates that the process produces items with little variation, which is desirable for maintaining quality.
+- In summary, standard deviation is a fundamental concept in statistics that provides insights into the variability and consistency of data, making it an essential tool for data analysis and decision-making.
+- The CumulativeDistribution method in the MathNetNumerics library is used to calculate the cumulative distribution function (CDF) for a given value in a specified probability distribution. The CDF represents the probability that a random variable drawn from the distribution will be less than or equal to a given value.
+- The primary purpose of the CumulativeDistribution method is to determine the likelihood that a random variable falls within a certain range. This is useful in various statistical analyses, such as hypothesis testing, probability calculations, and risk assessments.
+```c#
+  static void ManipulateVectorsAndMatrices()
+ {
+     var vector = Vector<double>.Build.DenseOfArray(new double[] { 1.0, 2.0, 3.0 });
+     Console.WriteLine("Vector: " + vector);
+     Console.WriteLine("First Element: " + vector[0]);
+     var scaledVector = vector * 2.0;
+     Console.WriteLine("Scaled Vector: " + scaledVector);
+     var matrix = Matrix<double>.Build.DenseOfArray(new double[,] { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 }, { 7.0, 8.0, 9.0 } });
+     Console.WriteLine("Matrix: " + matrix);
+     Console.WriteLine("Element at 0,0: " + matrix[0, 0]);
+     Console.WriteLine("Element at 0,1: " + matrix[0, 1]);
+     Console.WriteLine("Element at 1,2: " + matrix[1, 2]);
 
+     var addedMatrix = matrix + 1.0;
+     Console.WriteLine("Added Matrix: " + addedMatrix);
+ }
+
+ static void WorkWithStatisticAnalysisInMathNetNumerics()
+ {
+     double[] data = new double[] { 1.2, 2.3, 3.4, 4.5, 5.6,6.7 };
+     var mean = Statistics.Mean(data);
+     var stdDev = Statistics.StandardDeviation(data);
+     var median = Statistics.Median(data);
+     var min = Statistics.Minimum(data);
+     var max = Statistics.Maximum(data);
+
+     Console.WriteLine("Mean: " + mean);
+     Console.WriteLine("Standard Deviation: " + stdDev);
+     Console.WriteLine("Median: " + median);
+     Console.WriteLine("Min: " + min);
+     Console.WriteLine("Max: " + max);
+
+
+     
+     var normalDist = new MathNet.Numerics.Distributions.Normal(mean, stdDev);
+
+     var prob = normalDist.CumulativeDistribution(3.0);
+     Console.WriteLine("Probability of value being less than 3.0: " + prob);
+
+     var tTest = new StudentT();
+     var pValue = tTest.CumulativeDistribution(prob);
+     Console.WriteLine("P-Value for the paired t-Test: " + pValue);
+
+ }
+```
+## Linear Algerbra Operations with Math.NET Numerics
+- ![alt text](image-189.png)
+- Solving a linear system means finding the values of variables that satisfy a set of linear equations, where each equation is a straight line in a coordinate system.
+- For example, in two dimensions you might have two lines, and solving the system means finding the
+point where these lines intersect.
+- Methods like substitution, elimination, or using matrix operations can be used to find the solution.
+```c#
+ static void WorkWithLinearAlgebraOperations()
+{
+    var matrixA = DenseMatrix.OfArray(new double[,]
+    {
+        {1,2 },
+        {3,4}
+
+    });
+    var matrixB = DenseMatrix.OfArray(new double[,]
+   {
+        {5,6 },
+        {7,8}
+
+   });
+
+    var matrixAdd = matrixA + matrixB;
+    Console.WriteLine("Matrix Addition:\n" + matrixAdd);
+
+    var matrixSub = matrixA - matrixB;
+    Console.WriteLine("Matrix Subtraction: " + matrixSub);
+
+    //Cartesian Product of the matrix
+    var matrixMul = matrixA * matrixB;
+    Console.WriteLine("Matrix Multiplication: " + matrixMul);
+
+    /*
+      The inverse of a matrix is a new matrix that, when multiplied with the original matrix, results in the identity matrix. 
+      In other words, if A is the original matrix and A^-1 is its inverse, then A * A^-1 = I, where I is the identity matrix.
+      Inverse of matrix A is   -2   1
+                                1  -0.5
+      To verify that the inverse is correct, we can multiply matrixA with matrixInv:
+      Result is the identity matrix: 
+      1  0
+      0  1
+     */
+    var matrixInv = matrixA.Inverse();
+    Console.WriteLine("Matrix Inversion\n" + matrixInv);
+
+    var b = DenseVector.OfArray(new double[] { 1, 2 });
+    /*
+     The Solve method is called on the matrixA object. The Solve method solves the linear system of equations Ax = b, where A is the matrix and x is the unknown vector. The result of the Solve method is assigned to the variable x.
+     This means we have to solve this equation: 
+    1x + 2y = 1
+    3x + 4y = 2
+    Here x = 0 and y = (1 - 1x)/2
+    So y = 0.5
+     */
+    var x = matrixA.Solve(b);
+    Console.WriteLine("Solution to Ax = b:\n"+x);
+}
+
+```
+
+### Numerical Integration and Differentiation
+```c#
+ static void NumericalIntegrationAndDifferentiation()
+{
+    Func<double,double> function = x => Math.Sin(x);
+    /*
+      This line of code is performing numerical integration using the Simpson's rule. It calculates the integral of a given function over a specified range.
+      In the provided code, the SimpsonRule.IntegrateComposite method is called with the following parameters:
+        •	function: This is a lambda function that represents the function to be integrated. In this case, it is x => Math.Sin(x), which represents the sine function.
+        •	0: This is the lower bound of the integration range.
+        •	Math.PI: This is the upper bound of the integration range.
+        •	1000: This is the number of intervals used in the composite Simpson's rule.
+      The result of the integration is stored in the integral variable.
+      It allows us to calculate the definite integral of a function over a specified interval using Simpson's rule. 
+      This is important in various fields such as physics, engineering, and economics where integration is used to determine quantities like area under a curve, total accumulated value, and more.
+    1.	Pharmacokinetics: The area under the concentration-time curve (AUC) of a drug in the bloodstream helps in understanding the drug's absorption, distribution, metabolism, and excretion. This is crucial for determining appropriate dosages.
+    2.	Medical Imaging: In techniques like MRI and CT scans, integrating signal intensities can help in reconstructing images of the body's interior, aiding in diagnosis and treatment planning.
+     */
+
+    double integral = SimpsonRule.IntegrateComposite(function, 0, Math.PI, 1000);
+    Console.WriteLine($"Numerical Integration of sin(x) from 0 to pi:  "+integral);
+
+    /*
+     Numerical derivatives are useful because they allow us to approximate the derivative of a function when an analytical solution is difficult or impossible to obtain. 
+    This is particularly helpful in real-world applications where functions may not have simple closed-form expressions or where data is noisy or discrete.
+     •	Rate of Change: Numerical derivatives can be used to calculate the rate of change of economic indicators, such as inflation rates or stock prices.
+     •	Gradient Descent: Numerical derivatives are used to compute gradients in optimization algorithms, which are essential for training machine learning models.
+     •	Sensitivity Analysis: They help in understanding how changes in input variables affect the output of a model.
+     •	Signal Processing: If sin(x) represents a signal, its derivative can provide information about the rate of change of the signal, which is useful in filtering and analyzing the signal.
+     •	Control Systems: In control theory, understanding the rate of change of a system's output can help in designing controllers that respond appropriately to changes in the system.
+     */
+    Func<double,double> functionToDifferentiate = x => Math.Sin(x);
+    NumericalDerivative derivative = new NumericalDerivative();
+    double derivativeAtPoint = derivative.EvaluateDerivative(functionToDifferentiate, 1, 1);
+    Console.WriteLine($"Numerical Derivative of sin(x) at x = 1: {derivativeAtPoint}");
+}
+
+```
+
+### Solving Linear Equations and Systems
+- ![alt text](image-190.png)
+```c#
+ static void LinearEquationsAndSystems()
+ {
+     /*
+      This code is demonstrating the use of LU decomposition to solve a system of linear equations. 
+      LU decomposition is a method that decomposes a square matrix into the product of a lower triangular matrix and an upper triangular matrix.
+      It is commonly used to solve systems of linear equations efficiently.
+      3.	The code calls the LU method on the matrix A. This method performs LU decomposition on the matrix A and returns an LU factorization object.
+     4.	The code calls the Solve method on the LU factorization object, passing in the vector b. 
+         This method solves the system of linear equations Ax = b, where A is the matrix and x is the unknown vector. 
+         The result of the Solve method is assigned to the variable x.
+         LU decomposition is a powerful technique for solving systems of linear equations and is widely used in various fields of mathematics, science, and engineering.
+      */
+     var A = DenseMatrix.OfArray(new double[,] { {3,2,-1 },{2,-2,4 },{-1,0.5,-1 } });
+     var b = DenseVector.OfArray(new double[] {1,-2,0} );
+
+     var lu = A.LU();
+     var x = lu.Solve(b);
+
+     Console.WriteLine($"Solution using LU Decomposition: "+ x);
+
+     /*
+      This code demonstrates the use of QR decomposition to solve an overdetermined system of linear equations. 
+     QR decomposition is a method that decomposes a matrix into the product of an orthogonal matrix and an upper triangular matrix. 
+     It is commonly used to solve systems of linear equations efficiently.
+      */
+     var A_over = DenseMatrix.OfArray(new double[,]
+     {
+         {1, 1 },
+         {2, 3 },
+         {4,5 } });
+
+     var B_over = DenseVector.OfArray(new double[] {6,14,24} );
+
+     var qr = A_over.QR();
+     var x_over = qr.Solve(B_over);
+     Console.WriteLine($"Solution to overdetermined system using QR decomposition:" + x_over);
+
+
+     /*
+      The selected code demonstrates how to solve an underdetermined system of linear equations using Singular Value Decomposition (SVD). 
+     This is useful in various scenarios where you have more unknowns than equations, making the system underdetermined. Here are some practical applications:
+     1.	Data Science and Machine Learning: In these fields, you often encounter situations where you have more features (variables) than samples (equations). SVD can help in dimensionality reduction and solving such systems.
+     2.	Signal Processing: SVD is used in signal processing for noise reduction and data compression.
+     3.	Control Systems: In control theory, SVD can be used to design controllers for systems with more control inputs than outputs.
+     4.	Image Processing: SVD is used in image compression techniques like JPEG.
+     5.	Economics and Finance: In these fields, SVD can be used for portfolio optimization and risk management when dealing with large datasets.
+     This approach ensures that you can find a solution even when the system does not have a unique solution, which is common in real-world applications.
+
+      */
+     var A_under = DenseMatrix.OfArray(new double[,]
+     {
+         {2,3,1 },
+         {1,1,0 },
+          });
+
+     var B_under = DenseVector.OfArray(new double[] { 1,2 });
+
+     var svd = A_under.Svd(true);
+     var x_under = svd.Solve(B_under);
+     Console.WriteLine($"Solution to underdetermined system using SVD:" + x_under);
+
+ }
+```
+
+### Curve Fitting and Interpolation Techniques using MathNet.Numerics
+- ![alt text](image-191.png)
+```c#
+ static void CurveFittingInterpolationTechniques()
+{
+    /*
+     This code is performing polynomial curve fitting using the MathNet.Numerics library. 
+     Polynomial curve fitting is a technique used to find a polynomial function that best fits a given set of data points.
+     In this code, the xData array represents the x-coordinates of the data points, and the yData array represents the corresponding y-coordinates. The Fit.Polynomial method is used to fit a polynomial function to the data points.
+     This code is useful when you have a set of data points and want to find a polynomial function that closely approximates the relationship between the x and y values. Polynomial curve fitting is commonly used in various fields, such as data analysis, signal processing, and machine learning.
+     Polynomial curve fitting has various applications in different fields. Here are some common applications:
+     Data Analysis: Polynomial curve fitting is often used in data analysis to model and approximate relationships between variables. It can help identify trends, patterns, and make predictions based on the given data.
+     */
+    double[] xData = { 1, 2, 3, 4, 5, };
+    double[] yData = { 1, 4, 9, 16, 25 };
+    var polyFit = Fit.Polynomial(xData, yData, 2);
+    Console.WriteLine("Polynomial Coefficient");
+    foreach(var coeff in polyFit)
+    {
+        Console.WriteLine(coeff.ToString());
+    }
+
+    //This code is evaluating a polynomial function at a specific value of x and printing the result.
+    double polyValue = Polynomial.Evaluate(6);
+    Console.WriteLine($"Polynomial Value at x= 6: {polyValue}");
+
+
+    /*
+      This code is performing linear interpolation using the MathNet.Numerics library. 
+    Linear interpolation is a method used to estimate values between two known data points. 
+    In this code, the Interpolate.Linear method is used to create a linear interpolation function based on the provided xData and yData arrays. 
+    The Interpolate object returned by Interpolate.Linear represents the linear interpolation function.
+     */
+    var linearInterp = Interpolate.Linear(xData, yData);
+    double linearValue = linearInterp.Interpolate(2.5);
+    Console.WriteLine($"Linear interpolation at x = 2.5: {linearValue}");
+
+
+    /*
+    This code is performing cubic spline interpolation using the MathNet.Numerics library. 
+    Interpolation is a method used to estimate values between known data points. 
+    In this code, the Interpolate.CubicSpline method is used to create a cubic spline interpolation function based on the provided xData and yData arrays.
+    Cubic spline interpolation is a technique that uses piecewise-defined cubic polynomials to approximate a smooth curve that passes through the given data points. 
+    It provides a more accurate and smooth interpolation compared to linear interpolation.
+     */
+    var splineInterp = Interpolate.CubicSpline(xData, yData);
+    double splineValue = splineInterp.Interpolate(2.5);
+    Console.WriteLine($"Cubic spline interpolation at x = 2.5: {splineValue}");
+
+}
+
+```
+- ![alt text](image-192.png)
+
+### Optimization Methods using Math.NET Numerics
+- Gradient-Based Optimization Methods
+- These methods rely on the gradient of the objective function to find the minimum or maximum.
+- ![alt text](image-193.png)
+- The above algorithm also called BFGS algorithm is a popular choice for unconstrained optimization
+- In this example, we'll define a simple quadratic objective function and its gradient.
+- We'll then use the Bfgs algorithm to find the minimum. The Findminimum method returns the optimal point and the corresponding function value at the top of the code.
+- Optimization Problems: The BFGS algorithm is widely used in various fields to solve optimization problems, particularly when the objective function is smooth and differentiable. It's effective in machine learning, data science, and operations research.
+- Machine Learning: It's often used in training machine learning models, including logistic regression, support vector machines, and neural networks.
+- BFGS algorithm is useful for optimizing predictive models and improve decision making process
+- BFGS is used to optimize the weights of neural networks, improving their performance in tasks such as image recognition and natural language processing.
+- Portfolio Optimization: BFGS is employed to maximize returns and minimize risks in investment portfolios by optimizing the allocation of assets.
+- Image Reconstruction: BFGS is used in medical imaging techniques, such as MRI and CT scans, to reconstruct high-quality images from raw data.
+- In machine learning, we often have a model (like a neural network) that makes predictions. We want these predictions to be as accurate as possible. To achieve this, we need to find the best set of parameters (like weights in a neural network) that minimize the error between the model's predictions and the actual data. This process of finding the best parameters is called optimization.
+- The BFGS algorithm is a method used to perform optimization. It helps us find the best parameters by iteratively improving them based on the error and its gradient (a measure of how the error changes with respect to the parameters).
+- 1.	Define the Loss Function:
+•	The loss function measures how far off our model's predictions are from the actual values. The goal is to minimize this loss.
+•	In the code, lossFunction is defined as a function that takes the current weights and computes the loss using the training data.
+```c#
+Func<Vector<double>, double> lossFunction = weights => ComputeLoss(weights, trainingData);
+
+```
+- 2.	Define the Gradient Function:
+•	The gradient function tells us how to change the weights to reduce the loss. It's like getting directions to the bottom of a hill when you're trying to find the lowest point.
+•	In the code, gradientFunction is defined as a function that takes the current weights and computes the gradient using the training data.
+```c#
+Func<Vector<double>, Vector<double>> gradientFunction = weights => ComputeGradient(weights, trainingData);
+
+```
+- 3.	Create the Optimizer:
+•	We create an instance of the BFGS optimizer. This optimizer will use the loss and gradient functions to find the best weights.
+•	The parameters 1e-6, 100, and 1 are settings for the optimizer, like how precise we want the solution to be, the maximum number of iterations, and the initial step size.
+```c#
+var solver = new BfgsMinimizer(1e-6, 100, 1);
+```
+- 4.	Initial Weights:
+•	We start with an initial guess for the weights. These can be random or based on some prior knowledge.
+```c#
+var initialWeights = Vector<double>.Build.DenseOfArray(new double[] { /* initial weights */ });
+
+```
+- 5.	Run the Optimization:
+•	We run the optimizer to find the best weights that minimize the loss. The optimizer uses the loss and gradient functions to iteratively improve the weights.
+•	The result contains the optimal weights and the minimum loss.
+```c#
+var result = solver.FindMinimum(ObjectiveFunction.Gradient(lossFunction, gradientFunction), initialWeights);
+
+```
+
+- 6.	Print the Results:
+•	Finally, we print the optimal weights and the minimum loss.
+```c#
+Console.WriteLine($"Optimal Weights: {result.MinimizingPoint}");
+Console.WriteLine($"Minimum Loss: {result.FunctionInfoAtMinimum.Value}");
+
+```
+- 7. Imagine you have a model that predicts house prices based on features like size, number of rooms, etc. You want your model to be as accurate as possible. By using the BFGS algorithm, you can find the best weights for your model that minimize the prediction error. This process involves defining how wrong the predictions are (loss function), how to improve the weights (gradient function), and then using the optimizer to find the best weights.
+
+```c#
+static void OptimizationMethods()
+{
+    /*
+     This code is performing optimization using the BFGS (Broyden-Fletcher-Goldfarb-Shanno) algorithm in the MathNet.Numerics library. 
+     Optimization is the process of finding the best solution (minimum or maximum) for a given objective function, often subject to certain constraints.
+     Optimization algorithms are used to minimize the loss function during the training of machine learning models, such as neural networks.
+     In machine learning, the BFGS algorithm can be used to optimize the weights of a neural network. 
+     The objective function in this case would be the loss function, which measures the difference between the predicted and actual values. 
+     The gradient function would compute the gradient of the loss function with respect to the weights.
+     By using optimization techniques like BFGS, you can efficiently find the best parameters for your models and systems, leading to improved performance and outcomes in various applications.
+ 
+     */
+    Func<Vector<double>,double> objectiveFunction = x => Math.Pow(x[0], 2) + Math.Pow(x[1],2);
+    Func<Vector<double>, Vector<double>> gradientFunction = x => Vector<double>.Build.DenseOfArray(new double[] { 2 * x[0], 2 * x[1] });
+    var solver = new BfgsMinimizer(1e-6, 100, 1);
+    var result = solver.FindMinimum(ObjectiveFunction.Gradient(objectiveFunction, gradientFunction), Vector<double>.Build.DenseOfArray([1.0, 1.0]);
+    Console.WriteLine($"Optimal Point: {result.MinimizingPoint}");
+    Console.WriteLine($"Optimal Value: {result.FunctionInfoAtMinimum.Value}");
+}
+
+```
+### Sparse Matrices and Compressed Storage Formats 
+- ![alt text](image-194.png)
+- ![alt text](image-195.png)
+-  The matrix is represented by three arrays, one for the non-zero values, one for the column indices of these values, and one for the row pointers that indicate the start of each row.
+-  ![alt text](image-196.png)
+-  ![alt text](image-197.png)
+-  A sparse matrix is a matrix in which most of the elements are zero. They are commonly used in scientific computing and data science because they can save a significant amount of storage and computation time when dealing with large datasets.
+-  The CSR format is one of the ways to efficiently store sparse matrices. It compresses the matrix by only storing the non-zero elements and their locations. Here's a breakdown of how it works:
+- Values Array: Stores the non-zero elements of the matrix in row-major order.
+- Column Indices Array: Stores the column indices of the corresponding non-zero elements in the values array.
+- Row Pointers Array: Stores the index in the values array where each row starts. The length of this array is equal to the number of rows in the matrix plus one.
+- Let's say we have the following sparse matrix:
+- ![alt text](image-198.png)
+In CSR format, this matrix would be represented as:
+
+Values Array: [3, 4, 5, 6]
+
+Column Indices Array: [2, 0, 3, 0]
+
+Row Pointers Array: [0, 1, 2, 3, 4]
+
+```c#
+static void SparseMatrixRepresentation()
+{
+    int rows = 4;
+    int columns = 4;
+    var sparseMatrix = SparseMatrix.OfIndexed(rows, columns, new[]
+    {
+        Tuple.Create(0,0,1.0),
+        Tuple.Create(1,1,2.0),
+        Tuple.Create(2,2,3.0),
+        Tuple.Create(3,3,4.0),
+        Tuple.Create(0,3,5.0)
+    });
+
+    Console.WriteLine("Sparse Matrix (CSR Format):");
+    Console.WriteLine(sparseMatrix);
+
+    var denseMatrix = DenseMatrix.OfIndexed(rows, columns, new[]
+    {
+        Tuple.Create(0,0,1.0),
+        Tuple.Create(1,1,2.0),
+        Tuple.Create(2,2,3.0),
+        Tuple.Create(3,3,4.0),
+        Tuple.Create(0,3,5.0)
+    });
+
+    var result = sparseMatrix.Multiply(denseMatrix);
+    Console.WriteLine("Result of multiplication with Dense Matrix");
+    Console.WriteLine(result);
+}
+
+```
+- ![alt text](image-199.png)
+
+### Eigen Value Decomposition and Singular Value Decomposition
+- ![alt text](image-200.png)
+- Eigenvalues and eigenvectors play crucial roles in various machine learning algorithms and techniques.
+- Eigenvalues can help identify the most important features in a dataset. In some feature selection techniques, the eigenvalues associated with the covariance matrix are used to rank the features based on their contribution to the overall variance.
+- Spectral clustering is a clustering technique that uses the eigenvalues and eigenvectors of a similarity matrix to perform clustering.
+- In graph-based machine learning algorithms, eigenvalues and eigenvectors of the graph Laplacian matrix are used to analyze the structure of the graph and extract meaningful patterns
+- Used in Principal Component Analysis(PCA)
+- PCA is a dimensionality reduction technique used to transform high-dimensional data into a lower-dimensional space while retaining most of the variance in the data. The eigenvalues and eigenvectors of the data's covariance matrix are used to identify the principal components:
+- Eigenvalues: Indicate the amount of variance captured by each principal component.
+- Eigenvectors: Represent the directions of the principal components.
+- Imagine you’re on a calm lake in a rowboat. The water represents a matrix, the directions in which the boat can move represent eigenvectors, and how fast you can row in each direction represents eigenvalues. In some directions, you might row more efficiently (high eigenvalue), while in other directions, you move slower (low eigenvalue).
+- Understanding these special directions (eigenvectors) and how much things change in those directions (eigenvalues) helps in various areas:
+- In Music: To simplify and analyze sound waves.
+- In Images: To compress and reduce image sizes.
+- In Finance: To understand how different factors affect markets.
+- In Science: To solve complex equations that describe natural phenomena.
+- By understanding and utilizing eigenvalues and eigenvectors, machine learning practitioners can improve model accuracy, enhance feature selection, and uncover hidden patterns in data. These concepts are fundamental to many advanced techniques and are essential for building robust and efficient machine learning models.
+- SVD is a factorization of a matrix into three matrices U, epsilon, and V star.
+- It is used for dimensionality reduction, noise reduction, and matrix approximation.
+```c#
+static void EigenValueDecomposition()
+{
+    var matrix = DenseMatrix.OfArray(new double[,]
+    {
+        {4, 2 },
+        {1,1 }
+    });
+
+    var evd = matrix.Evd();
+
+    var eigenValues = evd.EigenValues;
+    var eigenVectors = evd.EigenVectors;
+
+    Console.WriteLine($"Eigen Values: {eigenValues}");
+    Console.WriteLine($"Eigen Vectos: {eigenVectors}");
+
+
+    var matrixSvd = DenseMatrix.OfArray(new double[,]
+    {
+        {1,0,0,0,2 },
+        {0,0,3,0,0 },
+        {0,0,0,0,0 },
+        {0,4,0,0,0 }
+    });
+
+    var svd = matrixSvd.Svd();
+    var U = svd.U;
+    var S = svd.S;
+    var VT = svd.VT;
+
+    Console.WriteLine($"U Value: {U} S Value: {S} VT Value: {VT}");
+}
+```
+
+### Multivariate Data Analysis and Dimensionality Reduction
+- MDA(Multivariate Data Analysis) involves examining multiple variables simultaneously to understand the relationships among them and how they influence one another. It's used in various fields like finance, biology, social sciences, and engineering.
+- Dimensionality Reduction reduces the number of input variables in a dataset while preserving its core information. It's essential for simplifying models, improving computational efficiency, and visualizing high-dimensional data.
+- Integrating these techniques can enhance your pharmacy management system by enabling predictive analytics and improving data visualization.
+- Used in PCA
+- Principal Component Analysis (PCA): Reduces the dimensionality of data while retaining as much variability as possible.PCA reduces dimensions by finding principal components that explain the most variance.
+- Factor analysis is a technique used to model observed variables and their underlying latent factors.
+- It helps in understanding the structure of the data by identifying the relationship between observed
+and latent variables.
+- MDS(Multidimensional Scaling) is a technique used to visualize the level of similarity of individual cases of a data set.
+- It aims to place each object in n dimensional space, such that the between object distances are preserved as well as possible.
+- This code is performing Multi-Dimensional Scaling (MDS). MDS is a technique used to visualize the similarity or dissimilarity between a set of objects in a lower-dimensional space. It aims to represent the objects in a way that preserves their pairwise distances or dissimilarities.
+- MDS is commonly used in various fields, such as data visualization, psychology, and social sciences, to analyze and visualize complex relationships between objects based on their dissimilarities.
+```c#
+ static void MultiDimensionalScaling()
+ {
+     double[,] dissimilarities =
+     {
+         {0.0,0.3,0.4,0.7 },
+         {0.3,0.3,0.5,0.8 },
+         {0.4,0.5,0.0,0.6 },
+         {0.7,0.8,0.6,0.0 },
+     };
+
+     var dissimilarityMatrix = Matrix<double>.Build.DenseOfArray(dissimilarities);
+     var n = dissimilarityMatrix.RowCount;
+     var identity = Matrix<double>.Build.DenseIdentity(n);
+     var ones = Matrix<double>.Build.Dense(n, n, 1.0);
+     var h = identity - (1.0 / n) * ones;
+     var b = -0.5 * h * dissimilarityMatrix.PointwisePower(2.0) * h;
+     var evd = b.Evd();
+     var mdsCoordinates = evd.EigenVectors.SubMatrix(0,n,0,2);
+     Console.WriteLine("MDS Coordinates");
+     Console.WriteLine(mdsCoordinates);
+ }
+
+```
+
+## NumSharp for Scientific Computing

@@ -59,6 +59,8 @@ public class SalesRecord
             new SalesRecord { Product = "Desktop", Price = 1500, Quantity = 1 }
         };
 
+        //Group and apply aggregation functions
+        //Group sales records by product and calculate total revenue and quantity
         var totalSales = salesRecords.GroupBy(s => s.Product).Select(s => new
         {
             Product = s.Key,
