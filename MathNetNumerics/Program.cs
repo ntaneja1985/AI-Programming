@@ -380,5 +380,46 @@ class Program
         Console.WriteLine(principalComponent);
     }
 
+    static void FactorAnalysis()
+    {
+        double[,] dataArray =
+        {
+            {4.0,2.0,0.6 },
+            {4.2,2.1,0.59 },
+            {3.9, 2.0,0.58 },
+            {4.3, 2.1, 0.62 },
+            {4.1, 2.2, 0.63 },
+        };
+
+        var dataMatrix = Matrix<double>.Build.DenseOfArray(dataArray);
+        var covarianceMatrix = dataMatrix.TransposeThisAndMultiply(dataMatrix) / (dataMatrix.RowCount - 1);
+        var evd = covarianceMatrix.Evd();
+        var factorLoadings = evd.EigenVectors.SubMatrix(0, dataMatrix.ColumnCount,0,2);
+        Console.WriteLine("Factor Loadings:");
+        Console.WriteLine(factorLoadings);
+    }
+
+
+    static void MultiDimensionalScaling()
+    {
+        double[,] dissimilarities =
+        {
+            {0.0,0.3,0.4,0.7 },
+            {0.3,0.3,0.5,0.8 },
+            {0.4,0.5,0.0,0.6 },
+            {0.7,0.8,0.6,0.0 },
+        };
+
+        var dissimilarityMatrix = Matrix<double>.Build.DenseOfArray(dissimilarities);
+        var n = dissimilarityMatrix.RowCount;
+        var identity = Matrix<double>.Build.DenseIdentity(n);
+        var ones = Matrix<double>.Build.Dense(n, n, 1.0);
+        var h = identity - (1.0 / n) * ones;
+        var b = -0.5 * h * dissimilarityMatrix.PointwisePower(2.0) * h;
+        var evd = b.Evd();
+        var mdsCoordinates = evd.EigenVectors.SubMatrix(0,n,0,2);
+        Console.WriteLine("MDS Coordinates");
+        Console.WriteLine(mdsCoordinates);
+    }
 
 }
