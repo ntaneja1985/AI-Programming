@@ -5285,3 +5285,359 @@ public class ModelOutput
 }
 
 ```
+
+## Accord.NET for Machine Learning and Statistical Analysis
+- It is an open-source .NET framework that provides a wide range of libraries for scientific computing, machine learning, computer vision, signal processing and statistics
+- Designed to be easy to use
+- ![alt text](image-201.png)
+- ![alt text](image-202.png)
+- ![alt text](image-203.png)
+- ![alt text](image-204.png)
+- ![alt text](image-205.png)
+
+### Loading and Pre-Processing Data with Accord.NET
+- Preprocessing involves cleaning and transforming the data to make it suitable for analysis.
+- Common preprocessing steps include handling missing values, normalizing data, and encoding categorical variables.
+- Handling missing values is crucial to ensure the quality of your data.
+- Accord.net provides functions to manage missing values efficiently.
+- Normalization is a key step in pre-processing, especially for machine learning models.
+- It scales the data to a standard range, improving the performance of algorithms.
+```c#
+  public static void LoadingData()
+  {
+      var csvReader = new CsvReader("accorddata.csv", hasHeaders: true);
+      DataTable dataTable = csvReader.ToTable();
+      Normalization normalization = new Normalization(dataTable);
+      DataTable result = normalization.Apply(dataTable);
+      DisplayDataTable(result);
+
+  }
+
+```
+
+### Exploratory Data Analysis(EDA) with Accord.NET
+- Exploratory Data Analysis, or EDA, is a critical step in understanding the structure and patterns
+within your data.
+- It involves summarizing the main characteristics of the data, often using visual methods.
+- EDA helps in discovering patterns, spotting anomalies, framing hypotheses, and checking assumptions.
+```c#
+ public static void StatisticalAnalysis()
+ {
+     var csvReader = new CsvReader("statistical.csv", hasHeaders: true);
+     DataTable dataTable = csvReader.ToTable();
+
+     foreach( DataColumn column in dataTable.Columns)
+     {
+         //Descriptive Statistics
+         var values = dataTable.AsEnumerable().Select(row => Convert.ToDouble(row[column])).ToArray();
+         double mean = values.Mean();
+         double median = values.Median();
+         double stdDev = values.StandardDeviation();
+         double variance = values.Variance();
+         double min = values.Min();
+         double max = values.Max();
+     }
+ }
+
+ public static void HypothesisTests()
+ {
+     double[] group1 = { 85, 89, 92, 88, 90, 91, 87 };
+     double[] group2 = { 78, 74, 77, 76, 80, 79, 75 };
+
+     //Tests where mean of 2 samples is different
+     var ttest = new TwoSampleTTest(group1, group2, assumeEqualVariances: true);
+
+     Console.WriteLine(ttest.Statistic);
+     Console.WriteLine(ttest.PValue);
+     Console.WriteLine(ttest.Significant);
+
+     var csvReader = new CsvReader("student_scores.csv", hasHeaders: true);
+     DataTable dataTable = csvReader.ToTable();
+     var methodA = dataTable.AsEnumerable().Where(row => row["Method"].ToString() == "A")
+                     .Select(row => Convert.ToDouble(row["Score"])).ToArray();
+
+     var methodB = dataTable.AsEnumerable().Where(row => row["Method"].ToString() == "B")
+                     .Select(row => Convert.ToDouble(row["Score"])).ToArray();
+
+     double meanA = methodA.Mean();
+     double meanB = methodB.Mean();
+
+     double stdDevA = methodA.StandardDeviation();
+     double stdDevB = methodB.StandardDeviation();
+
+     var ttest2 = new TwoSampleTTest(methodA, methodB, assumeEqualVariances: true);
+     Console.WriteLine(ttest2.Statistic);
+     Console.WriteLine(ttest2.PValue);
+     Console.WriteLine(ttest2.Significant);
+
+ }
+
+```
+
+### Classification Algorithms in Accord.NET 
+- Classification is a fundamental task in machine learning, where the goal is to assign labels to instances based on their features.
+- Accord.net provides a variety of classification algorithms to help you build robust models.
+- Decision trees are a versatile and intuitive classification method that splits data into branches to
+make decisions based on feature values.
+- In this code, we created a decision tree classifier using the C45 algorithm, taught the tree from
+the sample data and used it to predict the label of a new instance.
+- Decision trees split data based on feature values, making decisions at each branch until a label is
+assigned.
+
+#### K Nearest Neighbors(KNN)
+- Simple and effective classification algorithm that assigns a label to a new instance based on the labels of its k nearest neighbors in the feature space.
+```c#
+private static void ClassificationAlgos()
+{
+    double[][] inputs =
+    {
+        [1,1],
+        [1,0],
+        [0,1],
+        [0,0]
+    };
+    int[] outputs = { 1, 0, 0, 0 };
+    var decisionVariables = DecisionVariable.FromData(inputs);
+    var decisionTree = new DecisionTree(decisionVariables, 2);
+    var teacher = new C45Learning(decisionTree);
+    DecisionTree tree = teacher.Learn(inputs, outputs);
+    int[] newInputs = { 1, 1 };
+    int predicted = tree.Decide(newInputs);
+    Console.WriteLine($"PredictedLabel: {predicted}");
+
+    var knn = new KNearestNeighbors(k: 2);
+    knn.Learn(inputs, outputs);
+    double[] newInput = {1,1};
+    int predictedVal = knn.Decide(newInput);
+    Console.WriteLine($"Predicted Label: {predictedVal}");
+}
+
+```
+
+## Regression Techniques in Accord.NET 
+- Regression analysis is a powerful statistical method used to model the relationship between a dependent variable and one or more independent variables.
+### Linear Regression
+- Linear regression is the simplest form of regression analysis, where we model the relationship between the dependent and independent variables using a straight line.Linear regression fits a straight line to the data, making it easy to understand and interpret.
+
+### Polynomial Regression
+- Polynomial regression is an extension of linear regression, where the relationship between the dependent and independent variables is modeled as an nth degree polynomial.
+- Polynomial regression fits a polynomial curve to the data, allowing for more complex relationships
+between variables.
+
+### Clustering Methods in Accord.NET
+- Clustering is an unsupervised learning technique used to group similar data points into clusters.
+- This method is particularly useful for identifying patterns in data, customer segmentation, and image compression.
+```c#
+private static void ClusteringTechniques()
+{
+    string[] lines = File.ReadAllLines("clustering.csv");
+    double[][] data = new double[lines.Length - 1][];
+    for (int i = 0; i < lines.Length; i++)
+    {
+        string[] parts = lines[i].Split(',');
+        data[i - 1] = new double[]
+        {
+            double.Parse(parts[1]), //Math Score
+            double.Parse(parts[2]), //English Score
+            double.Parse(parts[3]), //Science Score
+            double.Parse(parts[4]) //History Score
+        };
+
+    }
+    int k = 3;
+    KMeans kmeans = new KMeans(k);
+    KMeansClusterCollection clusters = kmeans.Learn(data);
+    int[] labels = clusters.Decide(data);
+    Console.WriteLine("K-Means Clustering Results");
+    for (int i = 0; i < labels.Length; i++)
+    {
+        Console.WriteLine($"Data point {i + 1} is in cluster {labels[i] + 1}");
+    }
+    
+}
+
+```
+### Dimensionality Reduction Techniques
+- Dimensionality reduction is a process used to reduce the number of features in a data set, while retaining as much information as possible.
+- This technique is useful for visualizing high dimensional data, speeding up machine learning algorithms, and combating the curse of dimensionality.
+- We have dimensionality reduction techniques like PCA and t-SNE.
+- PCA is a linear technique that transforms the data into a new coordinate system, such that the greatest variance by any projection of the data comes to lie on the first coordinate, the second greatest variance on the second coordinate, and so on.
+- T-distributed stochastic neighbor embedding or t-SNE: t-SNE is a nonlinear dimensionality reduction technique that is particularly good for visualizing high dimensional data.
+```c#
+private static void DimensionalityReductionTechniques()
+{
+    string[] lines = File.ReadAllLines("clustering.csv");
+    double[][] data = new double[lines.Length - 1][];
+    for (int i = 0; i < lines.Length; i++)
+    {
+        string[] parts = lines[i].Split(',');
+        data[i - 1] = new double[]
+        {
+            double.Parse(parts[1]), //Math Score
+            double.Parse(parts[2]), //English Score
+            double.Parse(parts[3]), //Science Score
+            double.Parse(parts[4]) //History Score
+        };
+    }
+
+    var pca = new PrincipalComponentAnalysis()
+    {
+        Method = PrincipalComponentMethod.Center,
+        Whiten = false
+    };
+
+    pca.Learn(data);
+    double[][] pcaResult = pca.Transform(data);
+    Console.WriteLine("PCA Results:");
+    for(int i = 0; i < pcaResult.Length ; i++)
+    {
+        Console.WriteLine($"Data point {i + 1}: [{string.Join(", ", pcaResult[i])}]");
+    }
+
+    var tsne = new TSNE()
+    {
+        NumberOfOutputs = 2,
+        Perplexity = 2,
+        Theta = 0.5
+    };
+    double[][] tsneResult = tsne.Transform(data);
+    Console.WriteLine("TSNE Results:");
+    for (int i = 0; i < tsneResult.Length; i++)
+    {
+        Console.WriteLine($"Data point {i + 1}: [{string.Join(", ", tsneResult[i])}]");
+    }
+
+}
+
+```
+
+### Ensemble Learning and Random Forest in Accord.NET
+- Ensemble learning is a powerful machine learning technique that combines the predictions of multiple
+models to create a more accurate and robust final prediction.
+- The idea is that by aggregating the strengths of various models, we can mitigate their individual weaknesses.
+- Common ensemble methods include bagging, boosting, and stacking.
+- Random forests are an ensemble learning method that operates by constructing a multitude of decision
+trees during training time, and outputting the class that is, the mode of the classes, the classification or mean prediction regression of the individual trees.
+- This approach helps to reduce overfitting and improve predictive accuracy.
+```c#
+private static void EnsembleLearning()
+{
+    string[] lines = File.ReadAllLines("ensembleLearning.csv");
+    double[][] data = new double[lines.Length - 1][];
+    int[] labels = new int[lines.Length - 1];
+    for (int i = 0; i < lines.Length; i++)
+    {
+        string[] parts = lines[i].Split(',');
+        data[i - 1] = new double[]
+        {
+            double.Parse(parts[1]), //Math Score
+            double.Parse(parts[2]), //English Score
+            double.Parse(parts[3]), //Science Score
+            double.Parse(parts[4]) //History Score
+        };
+        labels[i-1] = int.Parse(parts[4]);
+    }
+
+    DecisionVariable[] attributes =
+    {
+        new DecisionVariable("MathScore",DecisionVariableKind.Continuous),
+        new DecisionVariable("EnglishScore",DecisionVariableKind.Continuous),
+        new DecisionVariable("ScienceScore",DecisionVariableKind.Continuous),
+        new DecisionVariable("HistoryScore",DecisionVariableKind.Continuous),
+    };
+
+    var teacher = new RandomForestLearning()
+    {
+        NumberOfTrees = 100
+    };
+
+    var forest = teacher.Learn(data,labels);
+    int[] predictions = forest.Decide(data);
+
+    double accuracy = new GeneralConfusionMatrix(predictions, labels).Accuracy;
+    Console.WriteLine($"Accuracy: {accuracy * 100:0.00}");
+
+}
+
+```
+
+### Support Vector Machines(SVM) with Accord.NET
+- Support Vector Machine, or SVM, is a powerful supervised learning algorithm used for classification
+and regression tasks.
+- The goal of SVM is to find the optimal hyperplane that best separates the data points of different classes in a high dimensional space.
+- SVM is effective in high dimensional spaces and is versatile due to its use of different kernel functions.
+```c#
+ private static void SupportVectorMachines()
+{
+    double[][] inputs =
+    {
+        [0,0],
+        [0,1],
+        [1,0],
+        [1,1],
+    };
+
+    int[] xor = { 0, 1, 1, 0 };
+    var learn = new SequentialMinimalOptimization<Gaussian>()
+    {
+        UseComplexityHeuristic = true,
+        UseKernelEstimation = true,
+    };
+
+    SupportVectorMachine<Gaussian> svm = learn.Learn(inputs, xor);
+    bool[] predictions = svm.Decide(inputs);
+    for (int i = 0; i < inputs.Length; i++)
+    {
+        int prediction = predictions[i] ? 1 : 0;
+        Console.WriteLine($"Input: ({inputs[i][0]},{inputs[i][1]}) - Prediction: {prediction}");
+    }
+}
+
+```
+
+### Neural Networks and Deep Learning with Accord.NET
+- Neural networks are a subset of machine learning algorithms modeled after the human brain.
+- They consist of interconnected nodes or neurons organized in layers.
+- The three main types of layers are the input layer, hidden layers, and the output layer.
+```c#
+  private static void NeuralNetworks()
+ {
+     //provide number of input neurons, number of hidden neurons and number of output neurons
+     ActivationNetwork network = new ActivationNetwork(new SigmoidFunction(),2,2,1);
+     BackPropagationLearning teacher = new BackPropagationLearning(network)
+     {
+         LearningRate = 0.1
+     };
+     double[][] inputs =
+     {
+         [0,0],
+         [0,1],
+         [1,0],
+         [0,1]
+     };
+     double[][] outputs = {
+     [0] ,
+     [1] ,
+     [1],
+     [0]
+     };
+
+     //Train for 1000 episodes or epochs
+     for (int i = 0; i < 1000; i++)
+     {
+         double error = teacher.RunEpoch(inputs, outputs);
+         if(i % 100 == 0)
+         {
+             Console.WriteLine($"Epoch {i}, Error: {error}");
+         }
+     }
+
+     //provide a sample input
+     double[] result = network.Compute([0, 1]);
+     Console.WriteLine($"Result for input [0,1]: {result[0]}");
+ }
+
+```
+
+## ML Agents in Unity(Intelligent AI for Video Games)
+- 

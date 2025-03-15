@@ -51,6 +51,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NumSharpScientificComputing
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeedleTimeSeries", "..\DeedleTimeSeries\DeedleTimeSeries.csproj", "{5984A7F7-26CC-4864-990C-96E4609DF3D9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccordNetFramework", "..\AccordNetFramework\AccordNetFramework.csproj", "{EF7E7C00-C438-4AC4-83BE-41A5BF0578A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -153,6 +155,10 @@ Global
 		{5984A7F7-26CC-4864-990C-96E4609DF3D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5984A7F7-26CC-4864-990C-96E4609DF3D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5984A7F7-26CC-4864-990C-96E4609DF3D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF7E7C00-C438-4AC4-83BE-41A5BF0578A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF7E7C00-C438-4AC4-83BE-41A5BF0578A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF7E7C00-C438-4AC4-83BE-41A5BF0578A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF7E7C00-C438-4AC4-83BE-41A5BF0578A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
