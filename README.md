@@ -5823,3 +5823,149 @@ and uses this model to select the most promising hyperparameters to evaluate nex
 - ![alt text](image-254.png)
 
 ## C# Refresher
+- Designed by Anders Hejlsberg
+- Released in 2000 by Microsoft
+- ![alt text](image-255.png)
+- A namespace is a way to organize your code and is used to group related classes together.
+- Classes are the building blocks of C sharp applications. They contain methods and data and define the behavior of objects created from the class.
+- The static keyword means this method belongs to the class itself rather than an instance of the class.
+- A variable is a storage location in your program that holds a value.Each variable has a name, a type, and a value.
+- Data types specify the kind of data a variable can hold, such as integers, floating point numbers,
+characters, and more.
+- ![alt text](image-256.png)
+- ![alt text](image-257.png)
+- ![alt text](image-258.png)
+- ![alt text](image-259.png)
+- ![alt text](image-260.png)
+- ![alt text](image-261.png)
+- ![alt text](image-262.png)
+- Polymorphism allows us to define methods in the base class that can be overridden in the derived classes to provide specific behavior.
+- ![alt text](image-263.png)
+- The most common access modifiers in C sharp are public, private, protected, and internal.
+- ![alt text](image-264.png)
+- ![alt text](image-265.png)
+- ![alt text](image-266.png)
+- ![alt text](image-267.png)
+- An array is a fixed sized collection of elements of the same type.
+- ![alt text](image-268.png)
+- ![alt text](image-269.png)
+- Lists are flexible and efficient for managing collections of data where the number of elements can change. They provide various methods for adding, removing, and accessing elements.
+- ![alt text](image-270.png)
+- ![alt text](image-271.png)
+- ![alt text](image-272.png)
+- In Csharp generics enable you to define classes, methods, and interfaces with a placeholder for
+the type of data they store or use.
+- This allows you to create reusable and type safe code that can work with any data type.
+- ![alt text](image-273.png)
+- ![alt text](image-274.png)
+- ![alt text](image-275.png)
+- ![alt text](image-276.png)
+- ![alt text](image-277.png)
+- Asynchronous programming allows your application to perform tasks without blocking the main thread,
+improving responsiveness and scalability.
+![alt text](image-278.png)
+- Here since we wait for result so main thread is blocked
+- ![alt text](image-280.png)
+- When we use await keyword, the main thread is not blocked and it is free to do other tasks
+- ![alt text](image-281.png)
+- In this example, we're calling Fetchdata async from the main method, which is also marked as async.
+- This ensures that our application remains responsive while waiting for the data to be fetched.
+- We can also run multiple tasks in parallel 
+- ![alt text](image-282.png)
+- ![alt text](image-283.png)
+- ![alt text](image-284.png)
+- Linq also supports method syntax, which can be more concise and is often preferred by developers.
+- In the method syntax, we use the where method to filter the list and a lambda expression to specify
+the condition.
+- ![alt text](image-285.png)
+- This syntax is often more compact and can be easier to read.
+- ![alt text](image-286.png)
+- For projection we use the Select method to build new anonymous types
+- ![alt text](image-287.png)
+- Delegates are like pointers to functions, while events provide a way for a class to notify other classes when something interesting happens.
+- A delegate is a type that represents references to methods with a specific parameter list and return
+type.
+- ![alt text](image-288.png)
+- We have multicast delegates also
+- Delegates can also point to multiple methods. These are known as multicast delegates using the += sign.
+- ![alt text](image-289.png)
+- Both methods are called sequentially when delegate is invoked
+- Events are built on top of delegates and provide a way for a class to notify other classes or objects when something of interest happens.
+- They are commonly used in GUI applications and other scenarios where you need to handle asynchronous
+actions.
+- ![alt text](image-290.png)
+- ![alt text](image-291.png)
+- ![alt text](image-292.png)
+- Reflection is a feature in C sharp that allows you to obtain information about assemblies, modules,
+and types at runtime.
+- It enables you to inspect and manipulate objects, their properties, methods, and events dynamically.
+- ![alt text](image-294.png)
+- Attributes, on the other hand, provide a way to add declarative information to your code, which can be retrieved at runtime using reflection.
+- The attribute usage attribute is a special attribute in C-sharp that specifies how a custom attribute can be used.
+- It defines the valid program elements for an attribute, whether it can be inherited by derived classes, and whether multiple instances of the attribute can be applied to a single element.
+- Attributes are used to give additional information to the compiler or runtime, which can then take specific actions based on this metadata.
+- Create a custom attribute
+```c#
+ [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
+public class CustomAttribute : Attribute
+{
+    public string Description { get; }
+    public CustomAttribute(string description)
+    {
+        Description = description;
+    }
+}
+
+// Applying the custom attribute
+[Custom("This is a sample custom attribute")]
+public class SampleClass { }
+
+
+//Retrieve and use attributes through reflection
+using System;
+using System.Reflection;
+
+[Custom("This is a demo class")]
+public class DemoClass { }
+
+class Program
+{
+    static void Main()
+    {
+        Type type = typeof(DemoClass);
+        var attributes = type.GetCustomAttributes(false);
+        foreach (var attribute in attributes)
+        {
+            Console.WriteLine(attribute.ToString());
+        }
+    }
+}
+
+```
+- Uses of Attributes
+- Marking Code for Serialization (e.g., [Serializable]).
+- Defining Unit Tests (e.g., [TestMethod] or [Test]).
+- Interop with External Libraries (e.g., [DllImport]).
+- Enabling Features in Frameworks (e.g., [HttpGet] in ASP.NET Core for routing).
+- Guiding Build or Runtime Behavior (e.g., [Conditional("DEBUG")] to conditionally compile code).
+- ![alt text](image-295.png)
+- ![alt text](image-296.png)
+- ![alt text](image-297.png)
+- ![alt text](image-298.png)
+- ![alt text](image-299.png)
+- Streams are abstract representations of byte sequences, which can be used for reading from and writing to various data sources like files, memory, and network sockets.
+- The System.IO namespace provides several classes for working with streams such as file stream, memory stream, buffered stream, Streamreader, and Streamwriter.
+- ![alt text](image-300.png)
+- ![alt text](image-301.png)
+- Memorystream is used for temporary storage of data in memory.
+- This is particularly useful for scenarios where you need to manipulate data before writing it to a permanent storage.
+- ![alt text](image-302.png)
+- Sometimes we need to add buffering to our I/O operations to improve performance
+- Buffered stream can be wrapped around other streams to provide this functionality.
+- ![alt text](image-303.png)
+- ![alt text](image-304.png)
+- We can use buffered stream to wrap a file stream, which improves the performance of reading and writing operations by reducing the number of I/O operations.
+- ![alt text](image-305.png)
+- ![alt text](image-306.png)
+
+## Linear Algebra Refresher
