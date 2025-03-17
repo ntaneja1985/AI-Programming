@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeedleTimeSeries", "..\Deed
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccordNetFramework", "..\AccordNetFramework\AccordNetFramework.csproj", "{EF7E7C00-C438-4AC4-83BE-41A5BF0578A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpRefresher", "..\CSharpRefresher\CSharpRefresher.csproj", "{45348A57-765E-41ED-A996-9B65ADEA6003}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -159,6 +161,10 @@ Global
 		{EF7E7C00-C438-4AC4-83BE-41A5BF0578A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF7E7C00-C438-4AC4-83BE-41A5BF0578A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF7E7C00-C438-4AC4-83BE-41A5BF0578A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45348A57-765E-41ED-A996-9B65ADEA6003}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45348A57-765E-41ED-A996-9B65ADEA6003}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45348A57-765E-41ED-A996-9B65ADEA6003}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45348A57-765E-41ED-A996-9B65ADEA6003}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

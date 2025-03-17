@@ -5969,3 +5969,259 @@ class Program
 - ![alt text](image-306.png)
 
 ## Linear Algebra Refresher
+- Linear algebra is a branch of mathematics that deals with vectors, vector spaces, and linear transformations.
+- It is the mathematical framework used to study linear equations, which are equations that graph as
+straight lines.
+- ![alt text](image-307.png)
+- This is a linear equation, and solving it involves linear algebra.
+- But linear algebra goes much deeper, providing tools for working with more complex systems of equations and Transformations.
+### 2 Fundamental Concepts in Linear Algebra are Vectors and Scalars
+- A scalar is simply a single number, whereas a vector is an ordered list of numbers.
+- Vectors can represent points or directions in space.
+- ![alt text](image-308.png)
+- Vectors are usually written in bold or with an arrow on the top, like this.
+- ![alt text](image-309.png)
+- Vectors are not just static objects.
+- We can perform various operations on them.
+- Two of the most basic operations are vector addition and scalar multiplication.
+- ![alt text](image-310.png)
+### Matrices
+- A matrix is a rectangular array of numbers arranged in rows and columns.
+- Matrices are used to represent and solve systems of linear equations, among other things
+- ![alt text](image-311.png)
+- We can perform operations on matrices also
+- Matrix Addition, Scalar Multiplication and Matrix Multiplication(dot product)
+- 2 important concepts in Matrices are Determinants and Inverses
+- The determinant is a special number that can be calculated from a square matrix.
+- It provides important properties about the matrix, such as whether it is invertible.
+- ![alt text](image-312.png)
+- If the determinant is nonzero, the matrix is invertible. Otherwise, it is not.
+- Linear algebra has numerous applications across various fields.
+- In computer graphics, it is used to transform and manipulate images.
+- In physics, it helps in solving systems of linear equations describing physical phenomena.
+- In machine learning, linear algebra is foundational.
+- Algorithms often involve operations with vectors and matrices, such as in linear regression, neural
+networks, and more.
+### Why is linear algebra so important in machine learning?
+- Because many machine learning algorithms are essentially linear models at their core.
+- Even complex models like neural networks rely on linear algebra for their basic operations.
+- In a neural network, the inputs, weights, and activations are represented as vectors and matrices.
+- ![alt text](image-313.png)
+- The training process involves matrix multiplications and other linear algebra operations.
+  ### Linear Algebra is important because of the following reasons:
+- ![alt text](image-314.png)
+- ![alt text](image-315.png)
+- ![alt text](image-316.png)
+- ![alt text](image-317.png)
+- ![alt text](image-318.png)
+- ![alt text](image-319.png)
+- ![alt text](image-320.png)
+- ![alt text](image-321.png)
+- ![alt text](image-322.png)
+- Consider a simple neural network with one input layer, one hidden layer, and one output layer.
+- The inputs can be represented as a vector, and the weights connecting the layers are matrices.
+- The forward pass involves multiplying the input vector by the weight matrix, adding a bias vector,
+and deploying an activation function.
+- This entire process is described using linear algebra operations, making the computation concise and
+efficient.
+
+### Matrices and Operations
+- ![alt text](image-323.png)
+- ![alt text](image-325.png)
+- ![alt text](image-326.png)
+- ![alt text](image-327.png)
+- Two important concepts in matrix operations are the identity matrix and the inverse matrix.
+- When any matrix is multiplied by the identity matrix, the original matrix remains unchanged.
+- ![alt text](image-328.png)
+- ![alt text](image-329.png)
+- When A is multiplied by -A, then the result is the identity matrix. 
+- A matrix must be square, having the same number of rows and columns, and its determinant must be non-zero to have an inverse
+- In machine learning, matrices are used to represent data sets and model parameters.
+- Operations like matrix multiplication are used extensively in training algorithms and neural networks.
+
+### Solving Linear Systems
+#### Gaussian Elimination
+- This method is like solving a puzzle.
+- ![alt text](image-330.png)
+- This process simplifies solving the system, because once the matrix is in upper triangular form, you
+can easily solve for the variables step by step.
+- ![alt text](image-331.png)
+- ![alt text](image-332.png)
+- ![alt text](image-333.png)
+- ![alt text](image-334.png)
+- ![alt text](image-335.png)
+- ![alt text](image-336.png)
+- ![alt text](image-337.png)
+- A coefficient matrix is a matrix that contains only the numerical coefficients of the variables in a system of linear equations. It’s like the compact “essence” of the system—stripping away the variables and constants on the right-hand side.
+- For example, consider the system of equations:
+- ![alt text](image-338.png)
+- The coefficient matrix consists of just the coefficients (numbers in front of 𝑥, 𝑦, and 𝑧), arranged neatly into a grid:
+- ![alt text](image-339.png)
+- This matrix is useful when solving systems of linear equations, especially when applying techniques like Gaussian elimination or matrix algebra. It forms the "skeleton" of the equations without the variables or the constants.
+- Identity Matrix looks like this:
+- ![alt text](image-340.png)
+- ![alt text](image-341.png)
+- ![alt text](image-342.png)
+- ![alt text](image-343.png)
+- ![alt text](image-344.png)
+- ![alt text](image-345.png)
+- ![alt text](image-346.png)
+- ![alt text](image-347.png)
+- ![alt text](image-348.png)
+- ![alt text](image-349.png)
+- ![alt text](image-350.png)
+- ![alt text](image-351.png)
+- ![alt text](image-352.png)
+- ![alt text](image-353.png)
+- ![alt text](image-354.png)
+
+### Vector Spaces and Subspaces
+- ![alt text](image-355.png)
+- These vectors can represent anything from physical quantities like force and velocity, to more abstract concepts like polynomials and functions.
+- ![alt text](image-356.png)
+- ![alt text](image-357.png)
+- ![alt text](image-358.png)
+- ![alt text](image-359.png)
+- ![alt text](image-360.png)
+- ![alt text](image-361.png)
+- ![alt text](image-362.png)
+- ![alt text](image-363.png)
+
+### Linear Independence and Span
+- ![alt text](image-364.png)
+- ![alt text](image-365.png)
+- If the only solution is a = 0 and b = 0, then the vectors are linearly independent.
+- ![alt text](image-366.png)
+- Hence a = 0, b = 0
+- thus u and v are linearly independent. 
+- Lets take another example:
+- ![alt text](image-367.png)
+- The above vectors are also linearly independent
+- ![alt text](image-368.png)
+- ![alt text](image-369.png)
+- ![alt text](image-370.png)
+- ![alt text](image-371.png)
+
+## Orthogonality and Orthogonal Matrices
+- ![alt text](image-372.png)
+- This means they are perpendicular to each other.
+- ![alt text](image-374.png)
+- ![alt text](image-375.png)
+- ![alt text](image-376.png)
+- ![alt text](image-377.png)
+- ![alt text](image-378.png)
+- ![alt text](image-379.png)
+- Orthogonal matrices have many important applications.
+- They are used in computer graphics for rotations and reflections, in numerical analysis, for stability and computations, and in data science for principal component analysis, or PCA.
+- Their property of preserving lengths and angles makes them very useful in these fields.
+
+## Matrix Transformations and Geometry
+- Matrices are powerful tools in linear algebra that can represent various geometric transformations.
+- These transformations include translation, rotation, and scaling.
+- ![alt text](image-380.png)
+- ![alt text](image-381.png)
+- Imagine you have a shape on a piece of graph paper, and you want to stretch, rotate, or move it. Instead of handling each point of the shape individually, you can use a matrix—a grid of numbers—to apply a transformation to all the points at once.
+- For example:
+- A rotation matrix spins the shape around a point (like a clock's hands moving).
+- A scaling matrix makes the shape larger or smaller.
+- A reflection matrix flips the shape, like looking at it in a mirror.
+- ![alt text](image-382.png)
+- Why Are Matrix Transformations Useful?
+- Matrix transformations are widely used in:
+- Computer Graphics: To animate objects (rotating, scaling, or moving them).
+- Physics: Modeling changes in forces or movement.
+- Machine Learning: Transforming data into new dimensions or spaces.
+- In machine learning, datasets are often represented as matrices. For example:
+- Rows represent individual data points (e.g., customers, images, or transactions).
+- Columns represent features (e.g., age, height, or pixel intensity).
+- Matrix transformations allow us to manipulate this data efficiently, such as normalizing features or scaling values.
+- Linear transformations, like rotations, scaling, and translations, are applied to data using matrices. These transformations are essential for:
+- Principal Component Analysis (PCA): Reducing the dimensionality of data by finding new axes (principal components) that capture the most variance.
+- Feature Scaling: Ensuring all features contribute equally to the model by transforming them into a common scale.
+- ![alt text](image-383.png)
+
+### Inner Products and Norms
+- Essential for measuring distances and angles between vectors.
+- An inner product is a generalization of the dot product.
+- It provides a way to multiply two vectors to get a scalar in Euclidean space.
+- The inner product measures how much one vector "aligns" with another. If two vectors point in the same direction, the inner product is large. If they are perpendicular, the inner product is zero.
+- ![alt text](image-384.png)
+- ![alt text](image-385.png)
+- ![alt text](image-386.png)
+- A norm is a function that assigns a non-negative length or size to each vector in a vector space.
+- In mathematics, a norm is a way to measure the size or length of an object, usually a vector. Think of it as a kind of "distance" that tells you how far a point or vector is from the origin in a particular space. Norms help quantify concepts like magnitude or length in linear algebra and vector spaces.
+- Norms help calculate distances between data points (e.g., Euclidean distance in clustering algorithms like K-Means).
+- ![alt text](image-387.png)
+
+### EigenValues and Eigen Vectors
+- Given a square matrix A, an eigenvector V is a nonzero vector that, when multiplied by A, yields a scalar multiple of itself.
+- This scalar is called an eigenvalue, represented by a lambda.
+- ![alt text](image-388.png)
+- ![alt text](image-389.png)
+- Eigenvalues and eigenvectors appear in many key concepts in machine learning:
+- Principal Component Analysis (PCA):
+- PCA is a dimensionality reduction technique.
+- The eigenvectors of the covariance matrix represent the "directions" (principal components) of maximum variance in the data.
+- The eigenvalues tell how much variance is captured by each eigenvector. Larger eigenvalues correspond to more important features.
+- Example: In a high-dimensional dataset (e.g., images with thousands of pixels), PCA identifies the most important axes to project the data onto, reducing the number of dimensions while preserving the most information.
+- Eigenvalues tell you the "scaling factors," and eigenvectors show the "directions" of transformation. In machine learning, they are used in PCA, graph-based algorithms, dimensionality reduction, and optimization.
+- ![alt text](image-390.png)
+
+### Matrix Rank and Null Space
+- ![alt text](image-391.png)
+- ![alt text](image-392.png)
+- Data Compression: Rank helps identify the true dimensionality of data (e.g., in PCA, where we reduce dimensions based on rank).
+- Feature Selection: Null spaces can indicate redundant features or dependencies in a dataset.
+- Optimization: In least-squares problems, null space analysis helps find solutions or errors.
+- Neural Networks: Understanding how layers reduce or transform dimensionality often involves rank and null space concepts.
+
+### Singular Value Decomposition(SVD)
+- Singular Value Decomposition (SVD) is a powerful linear algebra technique that breaks a matrix into three simpler matrices. It's widely used in machine learning, data science, and signal processing for tasks like dimensionality reduction, data compression, and solving systems of linear equations.
+- ![alt text](image-394.png)
+- ![alt text](image-393.png)
+- ![alt text](image-395.png)
+- By understanding SVD, you can leverage it for tasks like dimensionality reduction, noise reduction, and building recommender systems, and therefore be equipped with a powerful technique for analyzing and processing data efficiently.
+
+### Least Square Estimation
+- This is a method for fitting a model to data when there is no exact solution to the system of equations.
+- Least squares estimation is a method used to approximate the solution of an overdetermined system, which is a system of equations with more equations than unknowns.
+- ![alt text](image-396.png)
+- The goal is to find the model parameters that minimize the sum of the squares of the residuals, which are the differences between the observed values and the values predicted by the model.
+- Imagine you have a set of data points and you want to fit a line to this data.
+- The least squares method helps you find the line that minimizes the vertical distances or residuals between the data points and the line.
+- ![alt text](image-397.png)
+- Least Squares Estimation is a mathematical method used to find the best-fitting solution to a problem, usually when the data contains errors or noise. It minimizes the "sum of squared differences" (or residuals) between observed values and predicted values from a model. It's widely used in statistics, machine learning, and data analysis to fit models to data.
+- ![alt text](image-398.png)
+
+### Linear Transformations and Kernel
+- ![alt text](image-399.png)
+- In simpler terms, it’s a rule that takes vectors from one space, transforms them (rotates, scales, flips, or projects), and outputs vectors in another space while keeping the relationships between the vectors intact.
+- ![alt text](image-400.png)
+- The kernel of a linear transformation is the set of all vectors that get transformed to the zero vector under that transformation. It represents the "loss" of dimensions where the transformation collapses.
+- ![alt text](image-401.png)
+- ![alt text](image-402.png)
+
+### Principal Component Analysis(PCA) and Dimensionality Reduction
+- ![alt text](image-403.png)
+- It achieves this by transforming the original variables into a new set of variables called principal components, which are linear combinations of the original variables.
+- These components are ordered by the amount of variance they explain in the data.
+- ![alt text](image-404.png)
+- In datasets with many features (dimensions), not all features may be equally useful. Dimensionality reduction reduces the number of features while retaining the most significant ones. This helps:
+- Improve computational efficiency.
+- Reduce overfitting.
+- Make data visualization easier.
+- ![alt text](image-405.png)
+- In essence, PCA identifies the "directions" that matter most in your data, allowing you to reduce complexity without losing significant information
+- ![alt text](image-406.png)
+- ![alt text](image-407.png)
+- PCA achieves dimensionality reduction by retaining the principal components that explain the most variance in the data while discarding those components that contribute little variance.
+- ![alt text](image-408.png)
+- ![alt text](image-409.png)
+
+### Applications of Linear Algebra in Machine Learning
+- ![alt text](image-410.png)
+- ![alt text](image-411.png)
+- ![alt text](image-412.png)
+- ![alt text](image-413.png)
+- ![alt text](image-414.png)
+
